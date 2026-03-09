@@ -1,0 +1,3420 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Nolan AI — La IA que cierra negocios</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --ink: #0a0d12;
+        --ink2: #111720;
+        --ink3: #161e2b;
+        --border: rgba(255, 255, 255, 0.07);
+        --border2: rgba(255, 255, 255, 0.12);
+        --lime: #c8f135;
+        --lime2: #b4e020;
+        --lime-dim: rgba(200, 241, 53, 0.1);
+        --lime-glow: rgba(200, 241, 53, 0.3);
+        --white: #f4f6fa;
+        --muted: #8695a8;
+        --muted2: #a8b8c8;
+      }
+
+      @keyframes floatY {
+        0% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-18px) rotate(0deg);
+        }
+        100% {
+          transform: translateY(0) rotate(0deg);
+        }
+      }
+      .floating {
+        animation: floatY 4.5s ease-in-out infinite;
+      }
+
+      @keyframes floatYDonut {
+        0% {
+          transform: scale(1) translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: scale(1) translateY(-8px) rotate(0deg);
+        }
+        100% {
+          transform: scale(1) translateY(0) rotate(0deg);
+        }
+      }
+
+      .floating-donut {
+        animation: floatYDonut 4.5s ease-in-out infinite;
+        transform: scale(1) translateY(0) rotate(0deg);
+      }
+
+      .testi-svg-deco {
+        animation: spinDeco 16s linear infinite;
+      }
+      @keyframes spinDeco {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Optimización global para rendimiento */
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: var(--ink);
+        color: var(--white);
+        overflow-x: hidden;
+        cursor: default;
+      }
+
+      /* CUSTOM CURSOR */
+      .cursor {
+        width: 8px;
+        height: 8px;
+        background: var(--lime);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        transition:
+          transform 0.15s ease,
+          width 0.2s,
+          height 0.2s;
+        transform: translate(-50%, -50%);
+        will-change: transform;
+        backface-visibility: hidden;
+      }
+      .cursor.big {
+        width: 36px;
+        height: 36px;
+        background: transparent;
+        border: 1.5px solid var(--lime);
+      }
+
+      /* NAV */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 500;
+        padding: 1rem 5vw;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(10, 13, 18, 0.75);
+        backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--border);
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .nav-logo img {
+        height: 30px;
+        filter: brightness(10);
+        position: relative;
+        top: 2.5px;
+      }
+      .chile-flag {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        flex-shrink: 0;
+        top: 2.5px;
+      }
+      .chile-flag::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          180deg,
+          white 0%,
+          white 50%,
+          #d52b1e 50%,
+          #d52b1e 100%
+        );
+      }
+      .chile-flag::after {
+        content: "★";
+        position: absolute;
+        top: 0px;
+        left: 0;
+        width: 50%;
+        height: 50%;
+        background: #0039a6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 8px;
+        line-height: 1;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2.5rem;
+        list-style: none;
+      }
+      .nav-links a {
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        color: var(--muted2);
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--white);
+      }
+      .btn-nav {
+        background: var(--lime);
+        color: #0a0d12 !important;
+        padding: 0.55rem 1.4rem;
+        border-radius: 8px;
+        font-weight: 700 !important;
+        letter-spacing: 0.02em !important;
+        font-size: 0.82rem !important;
+        transition:
+          box-shadow 0.2s,
+          transform 0.2s !important;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      .btn-nav:hover {
+        box-shadow: 0 0 20px var(--lime-glow);
+        transform: translate3d(0, -1px, 0);
+      }
+
+      /* ═══ HERO ═══ */
+      .hero {
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8rem 5vw 5rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* Background slideshow container */
+      .hero-bg-slideshow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+
+      .hero-bg-slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0;
+        transition: opacity 3s ease-in-out;
+        transform: translate3d(0, 0, 0);
+        will-change: opacity;
+        contain: paint;
+      }
+
+      .hero-bg-slide:nth-child(1) {
+        background-image: url("img/fondos/puente_concepcion.png");
+        animation: fadeSlide1 20s ease-in-out infinite;
+      }
+      .hero-bg-slide:nth-child(2) {
+        background-image: url("img/fondos/concepcion_nocturna.png");
+        animation: fadeSlide2 20s ease-in-out infinite;
+      }
+      .hero-bg-slide:nth-child(3) {
+        background-image: url("img/fondos/reloj_concepcion.png");
+        background-position: -50px 50px;
+        background-size: 110%;
+        animation: fadeSlide3 20s ease-in-out infinite;
+      }
+
+      @keyframes fadeSlide1 {
+        0%,
+        30% {
+          opacity: 1;
+        }
+        33%,
+        94% {
+          opacity: 0;
+        }
+        97%,
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeSlide2 {
+        0%,
+        30% {
+          opacity: 0;
+        }
+        33%,
+        63% {
+          opacity: 1;
+        }
+        66%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes fadeSlide3 {
+        0%,
+        63% {
+          opacity: 0;
+        }
+        66%,
+        94% {
+          opacity: 1;
+        }
+        97%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* SECTION */
+      .testi {
+        padding: 140px 5%;
+        background: #0f172a5b !important;
+        display: flex;
+        justify-content: center;
+      }
+
+      .testi-title {
+        position: absolute;
+        top: 50px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: clamp(1.8rem, 3.2vw, 3.2rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        text-align: center;
+      }
+
+      /* Línea decorativa debajo */
+      .testi-title span::after {
+        content: "";
+        display: block;
+        width: 450px;
+        height: 2px;
+        margin: 0.6rem auto 0;
+        background: linear-gradient(
+          to right,
+          transparent,
+          #a3ff12,
+          transparent
+        );
+        opacity: 0.6;
+      }
+
+      /* GRID 3 COLUMNAS */
+      .testi-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1.2fr;
+        align-items: center;
+        gap: 60px;
+      }
+
+      .testi-wrapper {
+        margin-top: 3rem;
+        width: 100%;
+        max-width: 1200px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 60px;
+      }
+
+      .testi-divider {
+        width: 3px;
+        height: 420px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          #a3ff12,
+          transparent
+        );
+        border-radius: 10px;
+      }
+
+      /* DERECHA */
+
+      .testi-quote {
+        font-size: 1.1rem !important;
+        line-height: 1.5 !important;
+        color: #e5e7eb;
+        max-width: 330px;
+      }
+
+      .testi-quote span {
+        color: #4dd4ac;
+        font-weight: 600;
+      }
+
+      .testi-card {
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .testi-avatar img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: white;
+        padding: 6px;
+      }
+
+      /* IZQUIERDA - CARRUSEL */
+      .logo-carousel {
+        position: relative;
+        height: 400px;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      .logo-track {
+        display: flex;
+        flex-direction: column;
+        animation: scrollVertical 35s linear infinite;
+        will-change: transform;
+      }
+
+      .logo-item {
+        height: 95px;
+        width: 250px;
+        margin-bottom: 50px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 16px 18px;
+        border-radius: 20px;
+
+        background: rgb(255, 255, 255);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        overflow: hidden;
+        transition: background 0.3s ease;
+      }
+
+      .logo-item img {
+        max-height: 65px;
+        width: auto;
+        object-fit: contain;
+        transition: transform 0.4s ease;
+      }
+
+      /* Hover */
+      .logo-item:hover img {
+        transform: scale(1.15);
+      }
+
+      .logo-proclinica img {
+        max-height: 80px;
+      }
+
+      .logo-quiroprax img {
+        max-height: 190px;
+      }
+
+      .logo-drjose img {
+        max-height: 165px;
+      }
+
+      .logo-cesmed img {
+        max-height: 210px;
+      }
+
+      .logo-jardindeirene img {
+        max-height: 100px;
+      }
+
+      .logo-jovenesingenieros img {
+        max-height: 170px;
+      }
+
+      .logo-4beats img {
+        max-height: 90px;
+      }
+
+      /* ANIMACIÓN VERTICAL */
+      @keyframes scrollVertical {
+        from {
+          transform: translateY(-50%);
+        }
+        to {
+          transform: translateY(0%);
+        }
+      }
+
+      .testi-left {
+        display: flex;
+        justify-content: center;
+      }
+
+      .testi-center {
+        text-align: center;
+      }
+
+      .testi-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .review-carousel {
+        height: 420px;
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      .review-track {
+        display: flex;
+        flex-direction: column;
+        animation: scrollReviews 30s linear infinite;
+      }
+
+      .review-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 80px;
+        padding-bottom: 60px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      @keyframes scrollReviews {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-50%);
+        }
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 1024px) {
+        .testi {
+          padding: 120px 5% 90px;
+          overflow-x: auto;
+          overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+          justify-content: flex-start;
+        }
+
+        .testi-title {
+          top: 46px;
+          width: 90%;
+        }
+
+        .testi-title span::after {
+          width: 320px;
+        }
+
+        .testi-wrapper {
+          margin-top: 4.8rem;
+          grid-template-columns: minmax(290px, 1fr) minmax(290px, 1fr);
+          gap: 2.2rem;
+          max-width: none;
+          min-width: 680px;
+          flex: 0 0 auto;
+        }
+
+        .testi-divider {
+          display: none;
+        }
+
+        .testi-left,
+        .testi-right {
+          width: 100%;
+        }
+
+        .logo-carousel,
+        .review-carousel {
+          max-width: 100%;
+          margin: 0 auto;
+        }
+
+        .logo-carousel {
+          height: 340px;
+        }
+
+        .review-carousel {
+          height: 360px;
+        }
+
+        .logo-item {
+          width: min(100%, 320px);
+          margin-left: auto;
+          margin-right: auto;
+          margin-bottom: 36px;
+        }
+
+        .testi-quote {
+          max-width: 100%;
+          font-size: 1rem !important;
+        }
+
+        .review-item {
+          margin-bottom: 56px;
+          padding-bottom: 44px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .testi {
+          padding: 110px 1.1rem 80px;
+        }
+
+        .testi-title {
+          top: 40px;
+        }
+
+        .testi-title span::after {
+          width: 220px;
+          margin-top: 0.45rem;
+        }
+
+        .testi-wrapper {
+          margin-top: 4.2rem;
+          gap: 1.8rem;
+          min-width: 620px;
+        }
+
+        .logo-carousel {
+          height: 300px;
+        }
+
+        .review-carousel {
+          height: 320px;
+        }
+
+        .logo-item {
+          width: min(100%, 280px);
+          height: 82px;
+          margin-bottom: 28px;
+          padding: 12px 14px;
+        }
+
+        .logo-item img {
+          max-height: 64px;
+        }
+
+        .testi-card {
+          margin-top: 18px;
+          gap: 10px;
+        }
+
+        .testi-avatar img {
+          width: 42px;
+          height: 42px;
+          padding: 5px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .testi {
+          padding: 100px 0.9rem 72px;
+        }
+
+        .testi-title {
+          top: 54px;
+        }
+
+        .testi-title span::after {
+          width: 160px;
+        }
+
+        .testi-wrapper {
+          margin-top: 3.8rem;
+          min-width: 560px;
+        }
+
+        .logo-carousel {
+          height: 270px;
+        }
+
+        .review-carousel {
+          height: 300px;
+        }
+
+        .logo-item {
+          width: min(100%, 250px);
+          height: 76px;
+          margin-bottom: 22px;
+        }
+
+        .logo-item img {
+          max-height: 58px;
+        }
+
+        .testi-quote {
+          font-size: 0.95rem !important;
+          line-height: 1.45 !important;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .logo-item img {
+          max-height: 60px;
+        } /* base */
+      }
+
+      @media (max-width: 768px) {
+        .logo-proclinica img {
+          max-height: 74px;
+        }
+        .logo-quiroprax img {
+          max-height: 130px;
+        }
+        .logo-drjose img {
+          max-height: 120px;
+        }
+        .logo-cesmed img {
+          max-height: 140px;
+        }
+        .logo-jardindeirene img {
+          max-height: 78px;
+        }
+        .logo-jovenesingenieros img {
+          max-height: 120px;
+        }
+        .logo-4beats img {
+          max-height: 72px;
+        }
+      }
+
+      /* Animated gradient orbs */
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        pointer-events: none;
+        animation: drift 12s ease-in-out infinite alternate;
+        transform: translate3d(0, 0, 0);
+        will-change: transform;
+        contain: layout style paint;
+      }
+      .orb1 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(
+          circle,
+          rgba(200, 241, 53, 0.06) 0%,
+          transparent 70%
+        );
+        top: -10%;
+        left: -10%;
+        animation-delay: 0s;
+      }
+      .orb2 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(
+          circle,
+          rgba(56, 130, 255, 0.04) 0%,
+          transparent 70%
+        );
+        bottom: -5%;
+        right: -5%;
+        animation-delay: -6s;
+      }
+      @keyframes drift {
+        from {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        to {
+          transform: translate3d(40px, 30px, 0) scale(1.1);
+        }
+      }
+
+      /* Dot grid */
+      .hero-dots {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(
+          rgba(255, 255, 255, 0.07) 1px,
+          transparent 1px
+        );
+        background-size: 36px 36px;
+        mask-image: radial-gradient(
+          ellipse 70% 70% at 50% 50%,
+          black 0%,
+          transparent 100%
+        );
+        z-index: 0;
+        transform: translate3d(0, 0, 0);
+        contain: strict;
+      }
+
+      /* Ticker top */
+      .hero-ticker {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        border: 1px solid rgba(200, 241, 53, 0.3);
+        background: rgba(200, 241, 53, 0.06);
+        backdrop-filter: blur(8px);
+        padding: 0.35rem 1rem;
+        border-radius: 100px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--lime);
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 10;
+        animation:
+          fadeUp 0.6s ease both,
+          tickerGlow 6s ease-in-out infinite;
+        box-shadow: 0 0 12px rgba(200, 241, 53, 0.25);
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      @keyframes tickerGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 12px rgba(200, 241, 53, 0.25);
+        }
+        50% {
+          box-shadow:
+            0 0 16px rgba(200, 241, 53, 0.35),
+            0 0 24px rgba(200, 241, 53, 0.15);
+        }
+      }
+      .ticker-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--lime);
+        box-shadow: 0 0 10px var(--lime);
+        animation: blink 1.8s infinite;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+      @keyframes starFlicker {
+        0%,
+        100% {
+          opacity: 0.75;
+        }
+        50% {
+          opacity: 0.1;
+        }
+      }
+
+      /* Starry sky */
+      .hero::before,
+      .hero::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 50%;
+        pointer-events: none;
+        z-index: 1;
+        background-image:
+          radial-gradient(
+            1.5px 1.5px at 15% 18%,
+            rgb(255, 255, 255) 0 60%,
+            transparent 70%
+          ),
+          radial-gradient(
+            8px 8px at 15% 18%,
+            rgba(255, 255, 255, 0.3) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            1.3px 1.3px at 72% 25%,
+            rgb(255, 255, 255) 0 60%,
+            transparent 70%
+          ),
+          radial-gradient(
+            7px 7px at 72% 25%,
+            rgba(255, 255, 255, 0.18) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            1.4px 1.4px at 38% 12%,
+            rgba(255, 255, 255, 0.85) 0 60%,
+            transparent 70%
+          ),
+          radial-gradient(
+            8px 8px at 38% 12%,
+            rgba(255, 255, 255, 0.28) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            1.2px 1.2px at 88% 40%,
+            rgba(255, 255, 255, 0.45) 0 60%,
+            transparent 70%
+          ),
+          radial-gradient(
+            7px 7px at 88% 40%,
+            rgba(255, 255, 255, 0.15) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            1.5px 1.5px at 28% 45%,
+            rgba(255, 255, 255, 0.95) 0 60%,
+            transparent 70%
+          ),
+          radial-gradient(
+            8px 8px at 28% 45%,
+            rgba(255, 255, 255, 0.32) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            1.1px 1.1px at 55% 8%,
+            rgba(255, 255, 255, 0.5) 0 60%,
+            transparent 70%
+          ),
+          radial-gradient(
+            6px 6px at 55% 8%,
+            rgba(255, 255, 255, 0.16) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            1.4px 1.4px at 10% 35%,
+            rgba(255, 255, 255, 0.75) 0 60%,
+            transparent 70%
+          ),
+          radial-gradient(
+            7px 7px at 10% 35%,
+            rgba(255, 255, 255, 0.24) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            1.2px 1.2px at 65% 15%,
+            rgba(255, 255, 255, 0.867) 0 60%,
+            transparent 70%
+          ),
+          radial-gradient(
+            7px 7px at 65% 15%,
+            rgba(255, 255, 255, 0.2) 0%,
+            transparent 60%
+          );
+        background-size: 450px 450px;
+        background-position: center;
+        opacity: 0.75;
+        filter: brightness(0.9);
+        transform: translate3d(
+          calc(var(--star-x, 0px) * 0.8),
+          calc(var(--star-y, 0px) * 0.8),
+          0
+        );
+        transition: transform 0.3s ease-out;
+        backface-visibility: hidden;
+        contain: paint;
+        animation: starFlicker 1.5s ease-in-out infinite;
+      }
+      .hero::after {
+        background-size: 550px 550px;
+        background-position: center;
+        opacity: 0.65;
+        filter: brightness(0.85);
+        transform: translate3d(
+          calc(var(--star-x, 0px) * 1.2),
+          calc(var(--star-y, 0px) * 1.2),
+          0
+        );
+        transition: transform 0.3s ease-out;
+        backface-visibility: hidden;
+        contain: paint;
+        animation: starFlicker 1.5s ease-in-out infinite 0.8s;
+      }
+
+      /* Main headline */
+      .hero-h1 {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: clamp(3.5rem, 9vw, 8rem);
+        font-weight: 800;
+        line-height: 0.92;
+        letter-spacing: -0.04em;
+        color: var(--white);
+        margin-bottom: 1.8rem;
+        position: relative;
+        z-index: 2;
+        animation: fadeUp 0.6s 0.1s ease both;
+      }
+      .hero-h1 .hi {
+        display: block;
+        color: transparent;
+        animation:
+          fillColorChange 20s ease-in-out infinite,
+          strokeColorChange 20s ease-in-out infinite,
+          glowPulse 20s ease-in-out infinite;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      @keyframes glowPulse {
+        0%,
+        30%,
+        66%,
+        96%,
+        100% {
+          text-shadow:
+            0 0 20px rgba(200, 241, 53, 0.3),
+            0 0 40px rgba(200, 241, 53, 0.2);
+        }
+        15%,
+        81% {
+          text-shadow:
+            0 0 40px rgba(200, 241, 53, 0.8),
+            0 0 60px rgba(200, 241, 53, 0.5),
+            0 0 80px rgba(200, 241, 53, 0.3);
+        }
+        33%,
+        63% {
+          text-shadow:
+            0 0 40px rgba(200, 241, 53, 0.177),
+            0 0 60px rgba(173, 192, 106, 0.401);
+        }
+        48% {
+          text-shadow:
+            0 0 20px rgba(200, 241, 53, 0.4),
+            0 0 35px rgba(200, 241, 53, 0.25);
+        }
+      }
+      @keyframes fillColorChange {
+        0%,
+        30% {
+          color: rgba(0, 0, 0, 0.288);
+        }
+        33%,
+        63% {
+          color: transparent;
+        }
+        66%,
+        96% {
+          color: rgba(0, 0, 0, 0.288);
+        }
+        100% {
+          color: rgba(0, 0, 0, 0.288);
+        }
+      }
+      @keyframes strokeColorChange {
+        0%,
+        30% {
+          -webkit-text-stroke: 2px var(--lime);
+        }
+        33%,
+        63% {
+          -webkit-text-stroke: 2px var(--lime);
+        }
+        66%,
+        96% {
+          -webkit-text-stroke: 2px var(--lime);
+        }
+        100% {
+          -webkit-text-stroke: 2px var(--lime);
+        }
+      }
+
+      .metric-image {
+        margin-top: 2rem;
+        padding: 3rem;
+        display: flex;
+        justify-content: center;
+      }
+
+      .metric-image img {
+        width: 180px;
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+      }
+
+      .metrics-images-row {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+
+      .metric-image img {
+        max-width: 220px;
+        height: auto;
+      }
+
+      .hero-sub-box {
+        background: rgba(16, 23, 35, 0.562);
+        border: 2px solid rgba(20, 5, 47, 0.052);
+        border-radius: 16px;
+        padding: 2rem 2.5rem;
+        max-width: 700px;
+        margin: 0 auto 3rem;
+        position: relative;
+        z-index: 2;
+        animation:
+          fadeUp 0.6s 0.2s ease both,
+          subtleBoxGlow 4s ease-in-out infinite;
+        box-shadow:
+          inset 0 2px 8px rgba(0, 0, 0, 0.7),
+          inset 0 -2px 6px rgba(0, 0, 0, 0.5),
+          0 0 0 1px rgba(0, 0, 0, 0.8),
+          0 4px 16px rgba(0, 0, 0, 0.778),
+          0 12px 40px rgba(0, 0, 0, 0.25);
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        contain: layout style;
+      }
+      @keyframes subtleBoxGlow {
+        0%,
+        100% {
+          box-shadow: 0 0 0 rgba(200, 241, 53, 0);
+        }
+        50% {
+          box-shadow: 0 0 30px rgba(200, 241, 53, 0.08);
+        }
+      }
+      .hero-sub {
+        font-size: clamp(1rem, 1.6vw, 1.2rem);
+        color: rgba(234, 241, 255, 0.9);
+        font-weight: 300;
+        line-height: 1.7;
+        margin: 0;
+        text-shadow:
+          0 1px 3px rgba(0, 0, 0, 0.74),
+          0 2px 6px rgba(0, 0, 0, 0.503),
+          1px 0 2px rgba(0, 0, 0, 0.392),
+          -1px 0 2px rgba(0, 0, 0, 0.407),
+          0 -1px 2px rgba(0, 0, 0, 0.411);
+      }
+
+      /* CTA group */
+      .hero-cta {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+      .btn-lime {
+        background: var(--lime);
+        color: #0a0d12;
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-weight: 800;
+        font-size: 0.95rem;
+        letter-spacing: 0.01em;
+        padding: 0.9rem 2.2rem;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition:
+          box-shadow 0.25s,
+          transform 0.2s;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      .btn-lime:hover {
+        box-shadow: 0 0 40px var(--lime-glow);
+        transform: translate3d(0, -2px, 0);
+      }
+      .btn-ghost2 {
+        border: 2px solid rgba(247, 255, 220, 0.721);
+        background: rgba(200, 241, 53, 0.03);
+        color: var(--lime);
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 0.9rem 2rem;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        box-shadow: 0 0 16px rgba(200, 241, 53, 0.15);
+        transition:
+          box-shadow 0.25s,
+          transform 0.2s,
+          border-color 0.2s;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      .btn-ghost2:hover {
+        border-color: var(--lime);
+        box-shadow: 0 0 40px var(--lime-glow);
+        transform: translate3d(0, -2px, 0);
+      }
+
+      /* ─── STATS BAND ─── */
+      .stats-band {
+        background: var(--ink2);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .sband-item {
+        padding: 3rem 2rem;
+        border-right: 1px solid var(--border);
+        text-align: center;
+        position: relative;
+        transition: background 0.3s;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        contain: layout style;
+      }
+      .sband-item:last-child {
+        border-right: none;
+      }
+      .sband-item:hover {
+        background: var(--ink3);
+      }
+      .sband-item::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px;
+        background: var(--lime);
+        transition: width 0.4s ease;
+      }
+      .sband-item:hover::after {
+        width: 60%;
+      }
+      .sband-num {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 3rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: var(--lime);
+        display: block;
+        margin-bottom: 0.4rem;
+      }
+      .sband-lbl {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      /* ─── SECTIONS ─── */
+      section {
+        padding: 8rem 5vw;
+        position: relative;
+        content-visibility: auto;
+        contain-intrinsic-size: auto 500px;
+      }
+
+      .tag2 {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--lime);
+        margin-bottom: 1.2rem;
+      }
+      .tag2::before {
+        content: "";
+        width: 16px;
+        height: 1.5px;
+        background: var(--lime);
+      }
+
+      .big-h2 {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: clamp(2.2rem, 4vw, 3.8rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        margin-bottom: 1.2rem;
+      }
+
+      .sub-p {
+        font-size: 1rem;
+        color: var(--muted2);
+        line-height: 1.75;
+        font-weight: 300;
+        max-width: 520px;
+      }
+
+      /* ─── ABOUT ─── */
+      .about {
+        background: var(--ink);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8rem;
+        align-items: center;
+      }
+
+      .about-right {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .arow {
+        padding: 2rem 0;
+        border-bottom: 1px solid var(--border);
+        border-left: none;
+        border-right: none;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+        transition: padding-left 0.3s;
+        cursor: default;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        position: relative;
+      }
+      .arow:first-child {
+        border-top: 1px solid var(--border);
+      }
+      .arow::before {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(to bottom, var(--lime), transparent);
+        filter: blur(0px);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        box-shadow:
+          0 0 20px rgba(200, 241, 53, 0.6),
+          0 0 16px rgba(200, 241, 53, 0.3);
+      }
+      .arow::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(to top, var(--lime), transparent);
+        filter: blur(0px);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        box-shadow:
+          0 0 20px rgba(200, 241, 53, 0.8),
+          0 0 16px rgba(200, 241, 53, 0.5);
+        z-index: 2;
+      }
+      .arow:hover {
+        padding-left: 0.8rem;
+      }
+      .arow:hover::before,
+      .arow:hover::after {
+        opacity: 1;
+      }
+      .arow:hover .arow-num {
+        color: var(--white);
+      }
+
+      .arow-num {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        transition: color 0.2s;
+        width: 24px;
+      }
+      .arow-title {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+      }
+      .arow-text {
+        font-size: 0.875rem;
+        color: var(--muted2);
+        line-height: 1.6;
+      }
+      .arow-arrow {
+        font-size: 1.2rem;
+        color: var(--muted);
+        transition:
+          color 0.2s,
+          transform 0.2s;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      .arow:hover .arow-arrow {
+        color: var(--lime);
+        transform: translate3d(4px, 0, 0);
+      }
+
+      /* ─── PRODUCTS ─── */
+      .products {
+        background: var(--ink2);
+      }
+
+      .products-head {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: end;
+        margin-bottom: 4rem;
+      }
+
+      .prod-grid {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr 1fr;
+        gap: 1.5px;
+        background: var(--border);
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .pcard {
+        background: var(--ink3);
+        padding: 3rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        contain: layout style;
+      }
+      .pcard:hover {
+        background: #1c2535;
+      }
+      .pcard.star {
+        background: linear-gradient(160deg, #131d0d 0%, var(--ink3) 50%);
+      }
+      .pcard.star::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--lime2), var(--lime));
+      }
+
+      /* Glow blob inside featured */
+      .pcard.star::after {
+        content: "";
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(
+          circle,
+          rgba(200, 241, 53, 0.06) 0%,
+          transparent 70%
+        );
+        top: -50px;
+        right: -50px;
+        pointer-events: none;
+        transform: translate3d(0, 0, 0);
+        contain: paint;
+      }
+
+      .pcard-tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--lime);
+        margin-bottom: 1.5rem;
+      }
+      .pcard-logo {
+        height: auto;
+        width: auto;
+        max-height: 64px;
+        max-width: 80px;
+        display: block;
+        margin: 0;
+        border-radius: 8px;
+        padding: 8px;
+        object-fit: contain;
+      }
+      .pcard.star .pcard-logo {
+        max-height: 56px;
+        max-width: 150px;
+        padding: 0px;
+        margin-bottom: 5px;
+      }
+      .pcard:nth-child(2) .pcard-logo {
+        max-height: 150px;
+        max-width: 145px;
+        padding: 0px;
+      }
+      .pcard:nth-child(3) .pcard-logo {
+        max-height: 56px;
+        max-width: 150px;
+        padding: 0px;
+        margin-bottom: 10px;
+      }
+      .pcard-title-section {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.2rem;
+      }
+      .pcard-name {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: var(--white);
+      }
+      .pcard-desc {
+        font-size: 0.875rem;
+        color: var(--muted2);
+        line-height: 1.7;
+        font-weight: 300;
+        margin-bottom: 2.5rem;
+      }
+      .pcard-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-top: auto;
+      }
+      .pcard-list li {
+        font-size: 0.82rem;
+        color: var(--muted2);
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+      }
+      .pcard-list li::before {
+        content: "";
+        width: 16px;
+        height: 1.5px;
+        background: var(--lime);
+        flex-shrink: 0;
+      }
+
+      /* ─── IMPACT / METRICS ─── */
+      .impact {
+        background: var(--ink);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8rem;
+        align-items: center;
+      }
+
+      .impact-metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5px;
+        background: var(--border);
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      .metric {
+        background: var(--ink2);
+        padding: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        contain: layout style;
+      }
+      .metric:hover {
+        background: var(--ink3);
+      }
+      .metric::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(200, 241, 53, 0.3),
+          transparent
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .metric:hover::before {
+        opacity: 1;
+      }
+
+      .metric:first-child {
+        background: linear-gradient(160deg, #131d0d 0%, var(--ink3) 50%);
+      }
+
+      .metric:first-child::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--lime2), var(--lime));
+        opacity: 1;
+      }
+
+      .metric:first-child::after {
+        content: "";
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(
+          circle,
+          rgba(200, 241, 53, 0.06) 0%,
+          transparent 70%
+        );
+        top: -50px;
+        right: -50px;
+        pointer-events: none;
+        transform: translate3d(0, 0, 0);
+        contain: paint;
+      }
+
+      .metric-val {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 2.6rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        color: var(--lime);
+        margin-bottom: 0.5rem;
+        display: block;
+        position: relative;
+        z-index: 1;
+      }
+      .metric-lbl {
+        font-size: 0.85rem;
+        color: var(--muted2);
+        line-height: 1.5;
+        position: relative;
+        z-index: 1;
+      }
+      .metric-lbl strong {
+        color: var(--white);
+        font-weight: 600;
+      }
+
+      .impact-imgs {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-top: 15rem;
+        align-items: center;
+      }
+
+      .impact-donut-wrap {
+        width: 180px;
+        height: 180px;
+        position: relative;
+        margin-bottom: 0.5rem;
+      }
+
+      .floating-donut {
+        width: 170px;
+        height: 170px;
+        position: relative;
+        margin-bottom: 0.5rem;
+        border-radius: 50%;
+        margin-left: 5px;
+        margin-top: 12px;
+      }
+
+      #derivacionDonut {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .donut-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .donut-value {
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #ff9800;
+        line-height: 1;
+      }
+
+      .donut-label {
+        font-size: 0.8rem;
+        color: #fff;
+        opacity: 0.7;
+        line-height: 1.15;
+        margin-top: 0.2rem;
+      }
+
+      /* ─── TESTIMONIAL ─── */
+      .testi {
+        background: var(--ink2);
+        padding: 8rem 5vw;
+        position: relative;
+        overflow: hidden;
+      }
+      .testi::before {
+        content: "";
+        position: absolute;
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(
+          circle,
+          rgba(200, 241, 53, 0.04) 0%,
+          transparent 60%
+        );
+        top: 50%;
+        left: 50%;
+        transform: translate3d(-50%, -50%, 0);
+        pointer-events: none;
+        backface-visibility: hidden;
+        contain: paint;
+      }
+
+      .testi-inner {
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+      }
+
+      .testi-quote {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: clamp(1rem, 2.5vw, 1.5rem);
+        font-weight: 700;
+        line-height: 1.4;
+        letter-spacing: -0.02em;
+        color: var(--white);
+        margin-bottom: 0.1rem;
+      }
+      .testi-quote span {
+        color: var(--lime);
+      }
+
+      .testi-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--ink3);
+        border: 1px solid var(--border2);
+        padding: 0.5rem 1.1rem;
+        border-radius: 100px;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      .testi-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .testi-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 3px;
+      }
+      .testi-who strong {
+        font-size: 0.8rem;
+        color: var(--white);
+        display: block;
+        font-weight: 600;
+      }
+
+      .testi-who span {
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      /* ─── WA DEMO ─── */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate3d(0, 0, 0);
+        }
+        50% {
+          transform: translate3d(0, -10px, 0);
+        }
+      }
+      .wa-demo {
+        background: var(--ink3);
+        border: 1px solid var(--lime);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 320px;
+        box-shadow:
+          0 0 30px rgba(200, 241, 53, 0.6),
+          0 40px 80px rgba(0, 0, 0, 0.5);
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        contain: layout style;
+        animation: float 4s ease-in-out infinite;
+      }
+      .wa-header {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 1rem;
+      }
+      .wa-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--lime2), #5a9900);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+      .wa-name {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--white);
+      }
+      .wa-status {
+        font-size: 0.72rem;
+        color: var(--lime);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+      .wa-status::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--lime);
+      }
+
+      .wa-msgs {
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+        min-height: 180px;
+      }
+      .msg {
+        max-width: 85%;
+        padding: 0.6rem 0.9rem;
+        border-radius: 12px;
+        font-size: 0.82rem;
+        line-height: 1.5;
+      }
+      .msg.bot {
+        background: var(--ink2);
+        color: var(--muted2);
+        border-bottom-left-radius: 2px;
+        align-self: flex-start;
+      }
+      .msg.user {
+        background: var(--lime-dim);
+        color: var(--white);
+        border: 1px solid rgba(200, 241, 53, 0.2);
+        border-bottom-right-radius: 2px;
+        align-self: flex-end;
+      }
+      .msg-time {
+        font-size: 0.65rem;
+        color: var(--muted);
+        margin-top: 0.2rem;
+      }
+
+      .wa-input {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        align-items: center;
+      }
+      .wa-input-box {
+        flex: 1;
+        background: var(--ink);
+        border: 1px solid var(--border2);
+        border-radius: 8px;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+      .wa-send {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--lime);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: box-shadow 0.2s;
+      }
+      .wa-send:hover {
+        box-shadow: 0 0 16px var(--lime-glow);
+      }
+      .wa-send svg {
+        width: 14px;
+        height: 14px;
+        fill: #0a0d12;
+      }
+
+      /* ─── SERVICES ─── */
+      .services {
+        background: var(--ink2);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8rem;
+        align-items: start;
+      }
+
+      .svc-cards {
+        display: grid;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .scard {
+        background: var(--ink3);
+        padding: 2rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        gap: 1.2rem;
+        align-items: flex-start;
+        transition:
+          background 0.25s,
+          padding-left 0.25s;
+        position: relative;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        contain: layout style;
+      }
+      .scard:last-child {
+        border-bottom: none;
+      }
+      .scard:hover {
+        background: #1c2535;
+        padding-left: 2.5rem;
+      }
+
+      .scard-num {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 3rem;
+        font-weight: 800;
+        color: rgba(200, 241, 53, 0.12);
+        line-height: 1;
+        flex-shrink: 0;
+        min-width: 48px;
+        text-align: right;
+        transition: color 0.2s;
+      }
+      .scard:hover .scard-num {
+        color: var(--lime);
+      }
+      .scard-title {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+      }
+      .scard-text {
+        font-size: 0.875rem;
+        color: var(--muted2);
+        line-height: 1.65;
+      }
+
+      /* ─── CONTACT ─── */
+      .contact {
+        background: var(--ink);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8rem;
+        align-items: start;
+      }
+
+      .cform {
+        background: var(--ink2);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .cform::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--lime2), var(--lime));
+      }
+
+      .cform h3 {
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.4rem;
+      }
+      .cform p {
+        font-size: 0.875rem;
+        color: var(--muted);
+        margin-bottom: 2rem;
+      }
+
+      .fg {
+        margin-bottom: 1.1rem;
+      }
+      .fg label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+      }
+      .fg input,
+      .fg textarea {
+        width: 100%;
+        background: var(--ink);
+        border: 1px solid var(--border2);
+        border-radius: 10px;
+        padding: 0.8rem 1rem;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.88rem;
+        color: var(--white);
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .fg input:focus,
+      .fg textarea:focus {
+        border-color: var(--lime);
+        box-shadow: 0 0 0 3px rgba(200, 241, 53, 0.08);
+      }
+      .fg textarea {
+        resize: vertical;
+        min-height: 110px;
+      }
+
+      .fg-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .fsub {
+        width: 100%;
+        background: var(--lime);
+        color: #0a0d12;
+        border: none;
+        padding: 1rem;
+        border-radius: 10px;
+        font-family: "Bricolage Grotesque", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition:
+          box-shadow 0.25s,
+          transform 0.2s;
+        margin-top: 0.5rem;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+      }
+      .fsub:hover {
+        box-shadow: 0 0 30px var(--lime-glow);
+        transform: translate3d(0, -1px, 0);
+      }
+
+      .cinfo {
+        display: flex;
+        flex-direction: column;
+        gap: 1.8rem;
+        margin-top: 2.5rem;
+      }
+      .ci {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+      .ci-ico {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        border: 1px solid var(--border2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .ci-ico svg {
+        width: 18px;
+        height: 18px;
+        stroke: var(--lime);
+        fill: none;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .ci-lbl {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--lime);
+        margin-bottom: 0.2rem;
+      }
+      .ci-val {
+        font-size: 0.9rem;
+        color: var(--muted2);
+      }
+      .ci-val a {
+        color: inherit;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .ci-val a:hover {
+        color: var(--white);
+      }
+
+      /* ─── FOOTER ─── */
+      footer {
+        background: var(--ink2);
+        border-top: 1px solid var(--border);
+        padding: 4.5rem 5vw 2.5rem;
+      }
+      .ft-top {
+        display: grid;
+        grid-template-columns: 1.8fr 1fr 1fr 1fr;
+        gap: 3rem;
+        padding-bottom: 3rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .ft-brand img {
+        height: 30px;
+        filter: brightness(10);
+        margin-bottom: 1.2rem;
+        display: block;
+      }
+      .ft-brand p {
+        font-size: 0.82rem;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 220px;
+      }
+      .ft-col {
+        border-left: 1px solid var(--border);
+        padding-left: 1rem;
+      }
+      .ft-col:first-child {
+        border-left: none;
+      }
+      .ft-col h4 {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--lime2);
+        margin-bottom: 1.2rem;
+        padding-bottom: 0.5rem;
+      }
+      .ft-col ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+      }
+
+      .ft-col ul a {
+        text-decoration: none;
+        font-size: 0.85rem;
+        color: var(--muted2);
+        transition: color 0.2s;
+      }
+
+      .ft-col ul a:hover {
+        font-weight: 600;
+        color: var(--white);
+      }
+
+      .ft-bot {
+        padding-top: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.78rem;
+        color: var(--muted);
+      }
+
+      /* ─── ANIMATIONS ─── */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translate3d(0, 24px, 0);
+        }
+        to {
+          opacity: 1;
+          transform: translate3d(0, 0, 0);
+        }
+      }
+      .reveal {
+        opacity: 0;
+        transform: translate3d(0, 32px, 0);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease;
+        backface-visibility: hidden;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
+
+      /* Staggered children */
+      .stagger > * {
+        opacity: 0;
+        transform: translate3d(0, 24px, 0);
+        transition:
+          opacity 0.5s ease,
+          transform 0.5s ease;
+        backface-visibility: hidden;
+      }
+      .stagger.visible > *:nth-child(1) {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        transition-delay: 0s;
+      }
+      .stagger.visible > *:nth-child(2) {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        transition-delay: 0.1s;
+      }
+      .stagger.visible > *:nth-child(3) {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+        transition-delay: 0.2s;
+      }
+      .stagger.visible > *:nth-child(4) {
+        opacity: 1;
+        transform: none;
+        transition-delay: 0.3s;
+      }
+
+      /* ─── RESPONSIVE ─── */
+      @media (max-width: 1100px) {
+        section {
+          padding: 6rem 5vw;
+        }
+        .hero-bg-slide:nth-child(3) {
+          background-position: center center;
+          background-size: cover;
+        }
+        .testi {
+          padding: 6rem 5vw;
+          overflow-x: auto;
+          overflow-y: hidden;
+          -webkit-overflow-scrolling: touch;
+          justify-content: flex-start;
+        }
+        .testi-wrapper {
+          grid-template-columns: minmax(290px, 1fr) minmax(290px, 1fr);
+          min-width: 680px;
+          max-width: none;
+          flex: 0 0 auto;
+        }
+        .testi-divider {
+          display: none;
+        }
+        .impact > .reveal {
+          flex-direction: column;
+          align-items: stretch !important;
+          gap: 1.5rem !important;
+        }
+        .impact-imgs {
+          margin-top: 2rem;
+        }
+        .impact-metrics {
+          grid-template-columns: 1fr 1fr;
+          gap: 1px;
+        }
+        .metric {
+          padding: 2rem;
+        }
+        .metrics-images-row {
+          flex-wrap: wrap;
+          gap: 1rem;
+          justify-content: center;
+        }
+        .metric-image {
+          margin-top: 0;
+          padding: 0.35rem;
+        }
+        .metric-image img {
+          max-width: 180px;
+          width: 100%;
+        }
+        .about,
+        .impact,
+        .services,
+        .contact {
+          grid-template-columns: 1fr;
+          gap: 4rem;
+        }
+        .products-head {
+          grid-template-columns: 1fr;
+        }
+        .prod-grid {
+          grid-template-columns: 1fr;
+        }
+        .impact-metrics {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stats-band {
+          grid-template-columns: 1fr 1fr;
+        }
+        .ft-top {
+          grid-template-columns: 1fr 1fr;
+          gap: 2.5rem;
+        }
+      }
+      @media (max-width: 640px) {
+        .hero-bg-slide:nth-child(3) {
+          background-position: center center;
+          background-size: cover;
+        }
+        .testi-wrapper {
+          min-width: 560px;
+        }
+        .impact-donut-wrap {
+          width: 150px;
+          height: 150px;
+        }
+        .floating-donut {
+          width: 140px;
+          height: 140px;
+          margin-left: 5px;
+          margin-top: 8px;
+        }
+        .donut-value {
+          font-size: 1rem;
+        }
+        .donut-label {
+          font-size: 0.72rem;
+        }
+        .impact-metrics {
+          grid-template-columns: 1fr;
+        }
+        .metric {
+          padding: 1.35rem;
+        }
+        .metric-val {
+          font-size: 2rem;
+        }
+        .metric-lbl {
+          font-size: 0.8rem;
+        }
+        .metrics-images-row {
+          gap: 0.65rem;
+        }
+        .metric-image img {
+          max-width: 150px;
+        }
+        .nav-links {
+          display: none;
+        }
+        .stats-band {
+          grid-template-columns: 1fr;
+        }
+        .sband-item {
+          padding: 1.6rem 1rem;
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .sband-item:last-child {
+          border-bottom: none;
+        }
+        .sband-num {
+          font-size: 2.2rem;
+        }
+        .sband-lbl {
+          font-size: 0.78rem;
+        }
+        .ft-top {
+          grid-template-columns: 1fr;
+        }
+        .fg-row {
+          grid-template-columns: 1fr;
+        }
+        .hero-h1 {
+          font-size: 3.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="cursor" id="cursor"></div>
+
+    <!-- NAV -->
+    <nav>
+      <a href="#" class="nav-logo">
+        <img src="img/logos_productos/log nolan-04.png" alt="Logo" />
+        <div class="chile-flag"></div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#productos">Productos</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#contacto" class="btn-nav">Contáctanos</a></li>
+      </ul>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-bg-slideshow">
+        <div class="hero-bg-slide"></div>
+        <div class="hero-bg-slide"></div>
+        <div class="hero-bg-slide"></div>
+      </div>
+
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="hero-dots"></div>
+
+      <div class="hero-ticker">
+        <span class="ticker-dot"></span>
+        Concepción, Chile &nbsp;·&nbsp; IA operando ahora mismo
+      </div>
+
+      <h1 class="hero-h1">
+        La IA que<br />
+        <span class="hi">cierra negocios</span>
+        por ti
+      </h1>
+
+      <div class="hero-sub-box">
+        <p class="hero-sub">
+          Automatiza ventas, agendamientos y atención al cliente 24/7 vía
+          WhatsApp. Tus procesos funcionan solos — tú te enfocas en crecer.
+        </p>
+
+        <div class="hero-cta">
+          <a href="#contacto" class="btn-lime">
+            Agendar demo gratuita
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a href="#productos" class="btn-ghost2">Ver productos</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS BAND -->
+    <div class="stats-band stagger">
+      <div class="sband-item">
+        <span class="sband-num">+58k</span>
+        <span class="sband-lbl">Mensajes<br />Intercambiados</span>
+      </div>
+      <div class="sband-item">
+        <span class="sband-num">+8.6k</span>
+        <span class="sband-lbl">Ventas<br />Cerradas</span>
+      </div>
+      <div class="sband-item">
+        <span class="sband-num">+3.4k</span>
+        <span class="sband-lbl">Conversaciones<br />Iniciadas</span>
+      </div>
+      <div class="sband-item">
+        <span class="sband-num">+300</span>
+        <span class="sband-lbl">Usuarios<br />Nuevos / día</span>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section class="about" id="nosotros">
+      <div class="reveal">
+        <div class="tag2">Quiénes Somos</div>
+        <h2 class="big-h2">
+          Tecnología que<br />trabaja mientras<br />tú descansas
+        </h2>
+        <p class="sub-p">
+          Somos una empresa tecnológica con base en Concepción, Chile, dedicada
+          a desarrollar soluciones de IA que automatizan y escalan negocios
+          desde el primer día.
+        </p>
+      </div>
+      <div class="about-right reveal">
+        <div class="arow">
+          <span class="arow-num">01</span>
+          <div>
+            <div class="arow-title">Historia</div>
+            <div class="arow-text">
+              Fundados en 2025 con el sueño de que cualquier negocio en Chile
+              pueda acceder a tecnología de clase mundial sin complejidad.
+            </div>
+          </div>
+          <span class="arow-arrow">→</span>
+        </div>
+        <div class="arow">
+          <span class="arow-num">02</span>
+          <div>
+            <div class="arow-title">Misión</div>
+            <div class="arow-text">
+              Mejorar la experiencia de quienes administran negocios y sus
+              clientes, con soluciones modernas, escalables y centradas en las
+              personas.
+            </div>
+          </div>
+          <span class="arow-arrow">→</span>
+        </div>
+        <div class="arow">
+          <span class="arow-num">03</span>
+          <div>
+            <div class="arow-title">Visión</div>
+            <div class="arow-text">
+              Ser el referente en software inteligente de Chile, facilitando la
+              transformación digital de negocios a través de soluciones
+              accesibles y sostenibles.
+            </div>
+          </div>
+          <span class="arow-arrow">→</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section class="products" id="productos">
+      <div class="products-head">
+        <div class="reveal">
+          <div class="tag2">Nuestros Productos</div>
+          <h2 class="big-h2">Plataformas listas<br />para implementar</h2>
+        </div>
+        <div class="reveal">
+          <p class="sub-p">
+            SaaS con IA integrada. Cada plataforma está diseñada para
+            automatizar un sector específico — médico, general o eventos — sin
+            fricción técnica.
+          </p>
+        </div>
+      </div>
+      <div class="prod-grid reveal">
+        <div class="pcard star">
+          <div class="pcard-tag">⭐ Producto Estrella</div>
+          <div class="pcard-title-section">
+            <div class="pcard-name">MedBot</div>
+            <img
+              src="img/logos_productos/logo_medbot.png"
+              alt="MedBot"
+              class="pcard-logo"
+            />
+          </div>
+          <div class="pcard-desc">
+            Plataforma integral de administración de agendas médicas con CRM y
+            agente IA en WhatsApp. Agendamiento autónomo 24/7, recordatorios y
+            gestión completa de pacientes.
+          </div>
+          <ul class="pcard-list">
+            <li>Agendamiento autónomo vía WhatsApp</li>
+            <li>Agente IA que responde consultas 24/7</li>
+            <li>CRM de pacientes integrado</li>
+            <li>Recordatorios automáticos y reducción de ausencias</li>
+            <li>Para clínicas y centros médicos</li>
+          </ul>
+        </div>
+        <div class="pcard">
+          <div class="pcard-tag">Disponible</div>
+          <div class="pcard-title-section">
+            <div class="pcard-name">FastBot</div>
+            <img
+              src="img/logos_productos/fastbot_logo.png"
+              alt="FastBot"
+              class="pcard-logo"
+            />
+          </div>
+          <div class="pcard-desc">
+            Sistema de agendamiento general con CRM y asistente virtual por
+            WhatsApp. Reservas, seguimiento de clientes y automatización de
+            procesos.
+          </div>
+          <ul class="pcard-list">
+            <li>Gestión autónoma de reservas</li>
+            <li>CRM de clientes integrado</li>
+            <li>Asistente virtual WhatsApp</li>
+            <li>Para cualquier tipo de negocio</li>
+          </ul>
+        </div>
+        <div class="pcard">
+          <div class="pcard-tag">Disponible</div>
+          <div class="pcard-title-section">
+            <div class="pcard-name">VoyBot</div>
+            <img
+              src="img/logos_productos/logo_voy.png"
+              alt="VoyBot"
+              class="pcard-logo"
+            />
+          </div>
+          <div class="pcard-desc">
+            Administración completa de eventos con ticketera integrada, CRM y
+            chatbot para registro automatizado de participantes.
+          </div>
+          <ul class="pcard-list">
+            <li>Gestión de eventos completa</li>
+            <li>Ticketera integrada</li>
+            <li>Registro automatizado vía WhatsApp</li>
+            <li>Eventos públicos y privados</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMPACT -->
+    <section class="impact">
+      <!-- COLUMNA IZQUIERDA -->
+      <div
+        class="reveal"
+        style="display: flex; gap: 2.5rem; align-items: center"
+      >
+        <div style="flex: 1">
+          <div class="impact-metrics stagger">
+            <div class="metric">
+              <span class="metric-val">24/7</span>
+              <div class="metric-lbl">
+                <strong>Disponibilidad total</strong><br />Tu negocio atiende
+                aunque estés durmiendo
+              </div>
+            </div>
+            <div class="metric">
+              <span class="metric-val">86%</span>
+              <div class="metric-lbl">
+                <strong>Reducción de carga operacional</strong><br />Consultas
+                repetitivas gestionadas por IA
+              </div>
+            </div>
+            <div class="metric">
+              <span class="metric-val">↓94%</span>
+              <div class="metric-lbl">
+                <strong>Tiempo de primera respuesta</strong><br />Atención
+                inmediata que captura la intención
+              </div>
+            </div>
+            <div class="metric">
+              <span class="metric-val">×3</span>
+              <div class="metric-lbl">
+                <strong>Más conversiones</strong><br />Sin aumentar personal ni
+                costos fijos
+              </div>
+            </div>
+          </div>
+
+          <div class="metrics-images-row">
+            <div class="metric-image">
+              <img
+                class="floating"
+                src="img/metrics/mensajes_intercambiados.png"
+                alt="Mensajes Intercambiados"
+              />
+            </div>
+
+            <div class="metric-image">
+              <img
+                class="floating"
+                src="img/metrics/total_leads.png"
+                alt="Leads totales"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA -->
+      <div
+        class="reveal"
+        style="display: flex; gap: 2.5rem; align-items: center"
+      >
+        <div style="flex: 1">
+          <div class="tag2">Impacto Real</div>
+          <h2 class="big-h2">Resultados<br />que se miden</h2>
+          <p class="sub-p" style="margin-bottom: 2.5rem">
+            No vendemos promesas. Cada métrica refleja el impacto real que
+            nuestras plataformas generan en los negocios de nuestros clientes
+            desde el primer mes de implementación.
+          </p>
+
+          <!-- WhatsApp Demo Card -->
+          <div class="wa-demo">
+            <div class="wa-header">
+              <div class="wa-avatar">🤖</div>
+              <div>
+                <div class="wa-name">Asistente Nolan AI</div>
+                <div class="wa-status">En línea ahora</div>
+              </div>
+            </div>
+            <div class="wa-msgs" id="wa-msgs">
+              <div class="msg bot">
+                ¡Hola! 👋 Soy el asistente de <strong>MedBot</strong>. ¿En qué
+                puedo ayudarte hoy?
+                <div class="msg-time">14:32</div>
+              </div>
+              <div class="msg user">
+                Quiero agendar una consulta
+                <div class="msg-time">14:32</div>
+              </div>
+              <div class="msg bot">
+                ¡Perfecto! Tengo disponibilidad para mañana a las
+                <strong>10:00</strong>, <strong>11:30</strong> o
+                <strong>15:00 hrs</strong>. ¿Cuál te acomoda? 📅
+                <div class="msg-time">14:32</div>
+              </div>
+            </div>
+            <div class="wa-input">
+              <div class="wa-input-box">Escribe un mensaje...</div>
+              <div class="wa-send">
+                <svg viewBox="0 0 24 24">
+                  <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div style="width: 100%; display: block; margin: 2.5rem 0 0 0"></div>
+        </div>
+
+        <div class="impact-imgs">
+          <div class="floating impact-donut-wrap">
+            <!-- Gráfica animada donut -->
+            <div class="floating-donut">
+              <svg
+                id="derivacionDonut"
+                width="170"
+                height="170"
+                viewBox="0 0 170 170"
+              >
+                <circle
+                  cx="85"
+                  cy="85"
+                  r="75"
+                  stroke="#d1d5db"
+                  stroke-width="14"
+                  fill="none"
+                />
+                <circle
+                  id="donutOrange"
+                  cx="85"
+                  cy="85"
+                  r="75"
+                  stroke="#ff9800"
+                  stroke-width="14"
+                  fill="none"
+                  stroke-dasharray="470.16"
+                  stroke-dashoffset="470.16"
+                  stroke-linecap="round"
+                  transform="rotate(-90 85 85)"
+                  style="
+                    transition: stroke-dashoffset 1.2s
+                      cubic-bezier(0.7, 0, 0.3, 1);
+                  "
+                />
+              </svg>
+            </div>
+            <div class="donut-overlay">
+              <span class="donut-value">5.416</span>
+              <span class="donut-label">Derivados<br />humanos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div
+      class="testi-top-rect2"
+      style="width: 100%; height: 10px; background: var(--ink)"
+    ></div>
+
+    <!-- TESTIMONIAL SECTION -->
+
+    <section class="testi">
+      <!-- TÍTULO GENERAL -->
+      <div class="testi-title">
+        <span>Nuestros clientes</span>
+      </div>
+      <div class="testi-wrapper">
+        <!-- IZQUIERDA - LOGOS -->
+        <div class="testi-left">
+          <!-- (Carrusel Logos) -->
+          <div class="testi-left">
+            <div class="logo-carousel">
+              <div class="logo-track">
+                <div class="logo-item logo-proclinica">
+                  <img
+                    src="img/logos_clientes/logo_pro_clinica.png"
+                    alt="ProClínica"
+                  />
+                </div>
+                <div class="logo-item logo-quiroprax">
+                  <img
+                    src="img/logos_clientes/logo_quiro_prax.png"
+                    alt="QuiroPrax"
+                  />
+                </div>
+                <div class="logo-item logo-drjose">
+                  <img
+                    src="img/logos_clientes/logo_dr_jose.png"
+                    alt="Dr. José"
+                  />
+                </div>
+                <div class="logo-item logo-cesmed">
+                  <img src="img/logos_clientes/logo_cesmed.png" alt="Cesmed" />
+                </div>
+                <div class="logo-item logo-jardindeirene">
+                  <img
+                    src="img/logos_clientes/logo_jardin_de_irene.png"
+                    alt="Jardín de Irene"
+                  />
+                </div>
+                <div class="logo-item logo-jovenesingenieros">
+                  <img
+                    src="img/logos_clientes/logo_jovenes_ingenieros.png"
+                    alt="Jóvenes Ingenieros"
+                  />
+                </div>
+                <div class="logo-item logo-4beats">
+                  <img src="img/logos_clientes/logo_4beats.png" alt="4Beats" />
+                </div>
+                <!-- duplicados para loop infinito -->
+                <div class="logo-item logo-proclinica">
+                  <img
+                    src="img/logos_clientes/logo_pro_clinica.png"
+                    alt="ProClínica"
+                  />
+                </div>
+                <div class="logo-item logo-quiroprax">
+                  <img
+                    src="img/logos_clientes/logo_quiro_prax.png"
+                    alt="QuiroPrax"
+                  />
+                </div>
+                <div class="logo-item logo-drjose">
+                  <img
+                    src="img/logos_clientes/logo_dr_jose.png"
+                    alt="Dr. José"
+                  />
+                </div>
+                <div class="logo-item logo-cesmed">
+                  <img src="img/logos_clientes/logo_cesmed.png" alt="Cesmed" />
+                </div>
+                <div class="logo-item logo-jardindeirene">
+                  <img
+                    src="img/logos_clientes/logo_jardin_de_irene.png"
+                    alt="Jardín de Irene"
+                  />
+                </div>
+                <div class="logo-item logo-jovenesingenieros">
+                  <img
+                    src="img/logos_clientes/logo_jovenes_ingenieros.png"
+                    alt="Jóvenes Ingenieros"
+                  />
+                </div>
+                <div class="logo-item logo-4beats">
+                  <img src="img/logos_clientes/logo_4beats.png" alt="4Beats" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LINEA DIVISORIA -->
+        <div class="testi-divider"></div>
+
+        <!-- DERECHA - RESEÑAS -->
+        <div class="testi-right">
+          <!-- REVIEW CARRUSEL -->
+
+          <div class="review-carousel">
+            <div class="review-track">
+              <!-- RESEÑA 1 -->
+              <div class="review-item">
+                <p class="testi-quote">
+                  “El chatbot optimizó nuestro flujo interno y redujo tiempos de
+                  respuesta.
+                  <span>Lorem ipsum dolor sit amet</span>, consectetur
+                  adipiscing elit.”
+                </p>
+
+                <div class="testi-card">
+                  <div class="testi-avatar">
+                    <img src="img/logos_clientes/simple logo-proclinica.png" alt="Cliente" />
+                  </div>
+                  <div class="testi-who">
+                    <strong>Coordinador de Servicios</strong>
+                    <span>ProClínica · Cliente MedBot</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RESEÑA 2 -->
+              <div class="review-item">
+                <p class="testi-quote">
+                  “La automatización mejoró nuestra captación digital.
+                  <span>Lorem ipsum dolor sit amet</span>, sed do eiusmod tempor
+                  incididunt.”
+                </p>
+
+                <div class="testi-card">
+                  <div class="testi-avatar">
+                    <img src="img/logos_clientes/simple logo-proclinica.png" alt="Cliente" />
+                  </div>
+                  <div class="testi-who">
+                    <strong>Directora Comercial</strong>
+                    <span>Centro Médico Nova</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RESEÑA 3 -->
+              <div class="review-item">
+                <p class="testi-quote">
+                  “Redujimos ausencias en un 35%.
+                  <span>Lorem ipsum dolor sit amet</span>, consectetur
+                  adipiscing elit.”
+                </p>
+
+                <div class="testi-card">
+                  <div class="testi-avatar">
+                    <img src="simple logo-proclinica.png" alt="Cliente" />
+                  </div>
+                  <div class="testi-who">
+                    <strong>Gerente Operativo</strong>
+                    <span>Clínica Integral Plus</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DUPLICADAS para loop infinito -->
+              <!-- RESEÑA 1 -->
+              <div class="review-item">
+                <p class="testi-quote">
+                  “El chatbot optimizó nuestro flujo interno y redujo tiempos de
+                  respuesta.
+                  <span>Lorem ipsum dolor sit amet</span>, consectetur
+                  adipiscing elit.”
+                </p>
+
+                <div class="testi-card">
+                  <div class="testi-avatar">
+                    <img src="simple logo-proclinica.png" alt="Cliente" />
+                  </div>
+                  <div class="testi-who">
+                    <strong>Coordinador de Servicios</strong>
+                    <span>ProClínica · Cliente MedBot</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RESEÑA 2 -->
+              <div class="review-item">
+                <p class="testi-quote">
+                  “La automatización mejoró nuestra captación digital.
+                  <span>Lorem ipsum dolor sit amet</span>, sed do eiusmod tempor
+                  incididunt.”
+                </p>
+
+                <div class="testi-card">
+                  <div class="testi-avatar">
+                    <img src="simple logo-proclinica.png" alt="Cliente" />
+                  </div>
+                  <div class="testi-who">
+                    <strong>Directora Comercial</strong>
+                    <span>Centro Médico Nova</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RESEÑA 3 -->
+              <div class="review-item">
+                <p class="testi-quote">
+                  “Redujimos ausencias en un 35%.
+                  <span>Lorem ipsum dolor sit amet</span>, consectetur
+                  adipiscing elit.”
+                </p>
+
+                <div class="testi-card">
+                  <div class="testi-avatar">
+                    <img src="simple logo-proclinica.png" alt="Cliente" />
+                  </div>
+                  <div class="testi-who">
+                    <strong>Gerente Operativo</strong>
+                    <span>Clínica Integral Plus</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SERVICES -->
+    <section class="services" id="servicios">
+      <div class="reveal">
+        <div class="tag2">Consultoría Tecnológica</div>
+        <h2 class="big-h2">Servicios que<br />se adaptan<br />para ti</h2>
+        <p class="sub-p">
+          Más allá de nuestras plataformas, somos tu socio tecnológico. Nos
+          involucramos en entender tu operación y construimos la solución que
+          necesitas.
+        </p>
+      </div>
+      <div class="svc-cards reveal">
+        <div class="scard">
+          <span class="scard-num">01</span>
+          <div>
+            <div class="scard-title">Desarrollo a Medida</div>
+            <div class="scard-text">
+              Software personalizado para las necesidades específicas de tu
+              empresa. Desde aplicaciones web hasta sistemas empresariales
+              complejos e integraciones con tus herramientas actuales.
+            </div>
+          </div>
+        </div>
+        <div class="scard">
+          <span class="scard-num">02</span>
+          <div>
+            <div class="scard-title">Gestión Publicitaria</div>
+            <div class="scard-text">
+              Administración profesional de campañas en Meta (Facebook e
+              Instagram). Optimizamos cada peso invertido con datos reales y
+              resultados medibles.
+            </div>
+          </div>
+        </div>
+        <div class="scard">
+          <span class="scard-num">03</span>
+          <div>
+            <div class="scard-title">Automatización con IA</div>
+            <div class="scard-text">
+              Agentes inteligentes que ejecutan procesos, califican leads y
+              hacen seguimientos autónomos. Tu equipo enfocado en lo que
+              realmente importa.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="contact" id="contacto">
+      <div class="reveal">
+        <div class="tag2">Contacto</div>
+        <h2 class="big-h2">Hablemos<br />de tu negocio</h2>
+        <p class="sub-p" style="margin-bottom: 3rem">
+          ¿Listo para automatizar? Conversemos sobre cómo Nolan AI puede
+          transformar tu operación.
+        </p>
+        <div class="cinfo">
+          <div class="ci">
+            <div class="ci-ico">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+                />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+            </div>
+            <div>
+              <div class="ci-lbl">Email</div>
+              <div class="ci-val">
+                <a href="mailto:equipo@nolanai.cl">equipo@nolanai.cl</a>
+              </div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="ci-ico">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.5 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.41 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+                />
+              </svg>
+            </div>
+            <div>
+              <div class="ci-lbl">WhatsApp</div>
+              <div class="ci-val">
+                <a href="https://wa.me/56990819179">+56 9 9081 9179</a>
+              </div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="ci-ico">
+              <svg viewBox="0 0 24 24">
+                <rect x="2" y="2" width="20" height="20" rx="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+              </svg>
+            </div>
+            <div>
+              <div class="ci-lbl">Instagram</div>
+              <div class="ci-val">
+                <a href="https://instagram.com/nolanai.cl">@nolanai.cl</a>
+              </div>
+            </div>
+          </div>
+          <div class="ci">
+            <div class="ci-ico">
+              <svg viewBox="0 0 24 24">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            </div>
+            <div>
+              <div class="ci-lbl">Dirección</div>
+              <div class="ci-val">
+                Aníbal Pinto 180, Of. 207<br />Concepción, Bío-Bío, Chile
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="cform reveal">
+        <h3>Agenda tu demo</h3>
+        <p>Sin spam. Sin permanencia. Te respondemos en minutos.</p>
+        <div class="fg-row">
+          <div class="fg">
+            <label>Nombre</label><input type="text" placeholder="Tu nombre" />
+          </div>
+          <div class="fg">
+            <label>Empresa</label
+            ><input type="text" placeholder="Nombre de la empresa" />
+          </div>
+        </div>
+        <div class="fg">
+          <label>Email</label><input type="email" placeholder="tu@empresa.cl" />
+        </div>
+        <div class="fg">
+          <label>WhatsApp</label
+          ><input type="tel" placeholder="+56 9 XXXX XXXX" />
+        </div>
+        <div class="fg">
+          <label>¿Qué necesitas?</label
+          ><textarea
+            placeholder="Cuéntanos sobre tu operación y qué quieres automatizar..."
+          ></textarea>
+        </div>
+        <button class="fsub" type="button">Agendar demo gratuita →</button>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="ft-top">
+        <div class="ft-brand">
+          <img src="img/logos_productos/log nolan-04.png" alt="Nolan AI Logo" />
+          <p>
+            Nolan AI Software Limitada<br />Aníbal Pinto 180, Oficina 207<br />Concepción,
+            Bío-Bío, Chile
+          </p>
+        </div>
+        <div class="ft-col">
+          <h4>Productos</h4>
+          <ul>
+            <li><a href="https://medbot.cl">MedBot</a></li>
+            <li><a href="https://fastbot.cl">FastBot</a></li>
+            <li><a href="https://voybot.cl">VoyBot</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Servicios</h4>
+          <ul>
+            <li><a href="#">Desarrollo a Medida</a></li>
+            <li><a href="#">Consultoría Tecnológica</a></li>
+            <li><a href="#">Gestión Publicitaria</a></li>
+            <li><a href="#">Automatización IA</a></li>
+          </ul>
+        </div>
+        <div class="ft-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="mailto:equipo@nolanai.cl">equipo@nolanai.cl</a></li>
+            <li><a href="https://wa.me/56990819179">+56 9 9081 9179</a></li>
+            <li><a href="https://instagram.com/nolanai.cl">@nolanai.cl</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="ft-bot">
+        <span
+          >© 2025 Nolan AI Software Limitada. Todos los derechos
+          reservados.</span
+        >
+      </div>
+    </footer>
+
+    <script>
+      // Utilidad de throttle para optimizar performance
+      function throttle(func, delay) {
+        let rafId = null;
+        let lastArgs = null;
+
+        return function throttled(...args) {
+          lastArgs = args;
+          if (!rafId) {
+            rafId = requestAnimationFrame(() => {
+              func.apply(this, lastArgs);
+              rafId = null;
+            });
+          }
+        };
+      }
+
+      // Custom cursor con optimización
+      const cursor = document.getElementById("cursor");
+      if (cursor) {
+        const updateCursor = throttle((e) => {
+          cursor.style.left = e.clientX + "px";
+          cursor.style.top = e.clientY + "px";
+        }, 16); // ~60fps
+
+        document.addEventListener("mousemove", updateCursor, { passive: true });
+
+        document
+          .querySelectorAll("a,button,.scard,.arow,.pcard,.metric,.sband-item")
+          .forEach((el) => {
+            el.addEventListener(
+              "mouseenter",
+              () => cursor.classList.add("big"),
+              { passive: true },
+            );
+            el.addEventListener(
+              "mouseleave",
+              () => cursor.classList.remove("big"),
+              { passive: true },
+            );
+          });
+      }
+
+      // Scroll reveal optimizado con rootMargin
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add("visible");
+              io.unobserve(e.target); // Dejar de observar después de revelar
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: "50px" },
+      );
+      document
+        .querySelectorAll(".reveal,.stagger")
+        .forEach((el) => io.observe(el));
+
+      // Nav shadow con throttle y RAF
+      let navTicking = false;
+      const nav = document.querySelector("nav");
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (!navTicking) {
+            requestAnimationFrame(() => {
+              nav.style.boxShadow =
+                window.scrollY > 40 ? "0 4px 40px rgba(0,0,0,0.5)" : "none";
+              navTicking = false;
+            });
+            navTicking = true;
+          }
+        },
+        { passive: true },
+      );
+
+      // Animate stat numbers
+      const numEls = document.querySelectorAll(".sband-num");
+      const numObs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.style.animation = "fadeUp 0.5s ease both";
+              numObs.unobserve(e.target);
+            }
+          });
+        },
+        { threshold: 0.5 },
+      );
+      numEls.forEach((el) => numObs.observe(el));
+
+      // Interactive stars parallax optimizado
+      const hero = document.querySelector(".hero");
+      let starsRaf = null;
+      let starsTarget = { x: 0, y: 0 };
+      let lastStarsUpdate = 0;
+
+      if (hero) {
+        const maxMove = 15;
+        const throttleDelay = 32; // ~30fps para el parallax (suficiente suavidad)
+
+        const updateStarsParallax = () => {
+          const tx = starsTarget.x * maxMove;
+          const ty = starsTarget.y * maxMove;
+          hero.style.setProperty("--star-x", tx + "px");
+          hero.style.setProperty("--star-y", ty + "px");
+        };
+
+        hero.addEventListener(
+          "mousemove",
+          (e) => {
+            const now = performance.now();
+            if (now - lastStarsUpdate < throttleDelay) return;
+
+            const rect = hero.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            starsTarget = { x, y };
+            lastStarsUpdate = now;
+
+            if (!starsRaf) {
+              starsRaf = requestAnimationFrame(() => {
+                updateStarsParallax();
+                starsRaf = null;
+              });
+            }
+          },
+          { passive: true },
+        );
+
+        // Animación donut derivación humana
+        document.addEventListener("DOMContentLoaded", function () {
+          const total = 100000; // Total de conversaciones
+          const derivados = 5416;
+          const percent = derivados / total;
+          const circle = document.getElementById("donutOrange");
+          if (circle) {
+            const circumference = 2 * Math.PI * 75;
+            circle.setAttribute("stroke-dasharray", circumference);
+            setTimeout(() => {
+              circle.setAttribute(
+                "stroke-dashoffset",
+                circumference * (1 - percent),
+              );
+            }, 400);
+          }
+        });
+
+        hero.addEventListener(
+          "mouseleave",
+          () => {
+            starsTarget = { x: 0, y: 0 };
+            if (!starsRaf) {
+              starsRaf = requestAnimationFrame(() => {
+                updateStarsParallax();
+                starsRaf = null;
+              });
+            }
+          },
+          { passive: true },
+        );
+
+        hero.style.setProperty("--star-x", "0px");
+        hero.style.setProperty("--star-y", "0px");
+      }
+    </script>
+  </body>
+</html>

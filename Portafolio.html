@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paula Labra — Frontend Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070711;
+  --bg2: #0d0d1a;
+  --glass: rgba(255,255,255,0.03);
+  --glass-border: rgba(255,255,255,0.07);
+  --violet: #7c5cfc;
+  --violet-light: #a78bfa;
+  --violet-glow: rgba(124,92,252,0.15);
+  --pink: #f472b6;
+  --cyan: #22d3ee;
+  --text: #f0f0ff;
+  --muted: #6b6b8a;
+  --muted2: #4a4a65;
+  --card: rgba(255,255,255,0.025);
+  --card-hover: rgba(124,92,252,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── CANVAS BG ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.95;
+}
+
+#mini-galaxy {
+  position: absolute;
+  right: 3.5rem;
+  top: 46vh;
+  width: 500px;
+  height: 500px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 18px rgba(124,92,252,0.25));
+}
+
+.content { position: relative; z-index: 1; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--violet); border-radius: 2px; }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 3rem;
+  background: linear-gradient(to bottom, rgba(2,2,10,0.95), transparent);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.logo-star {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  background: transparent;
+  flex-shrink: 0;
+  animation: star-twinkle 2.4s ease-in-out infinite;
+}
+
+.logo-star::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,4 61,36 96,50 61,64 50,96 39,64 4,50 39,36' fill='none' stroke='%23ffd56f' stroke-width='5' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(0 0 6px rgba(255, 214, 107, 0.75));
+}
+
+@keyframes star-twinkle {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 4px rgba(255, 214, 107, 0.5));
+  }
+  50% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 7px rgba(255, 223, 133, 0.65));
+  }
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0; right: 0;
+  height: 1px;
+  background: #b57bee;
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--text);
+}
+
+.nav-links a:hover::after { transform: scaleX(1); }
+
+.nav-cta {
+  background: transparent;
+  border: 1px solid rgba(181,123,238,0.4);
+  color: #b57bee !important;
+  padding: 0.5rem 1.25rem;
+  border-radius: 100px;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  transition: all 0.25s !important;
+}
+
+.nav-cta:hover {
+  background: rgba(181,123,238,0.1) !important;
+  border-color: #b57bee !important;
+  box-shadow: 0 0 20px rgba(181,123,238,0.2);
+}
+
+.nav-cta::after { display: none !important; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8rem 2rem 4rem;
+  text-align: center;
+  position: relative;
+}
+
+.hero-inner {
+  width: min(1200px, 100%);
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.8rem;
+  align-items: center;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.hero-intro {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 22px;
+  padding: 1.4rem 1.15rem;
+  backdrop-filter: blur(1px);
+}
+
+.hero-card-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem 2.2rem;
+}
+
+.hero-main {
+  text-align: center;
+  transform: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(124,92,252,0.12);
+  border: 1px solid rgba(124,92,252,0.3);
+  border-radius: 100px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--violet-light);
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.2s forwards;
+}
+
+.pulse {
+  width: 6px; height: 6px;
+  background: #4ade80;
+  border-radius: 50%;
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.5); }
+  50% { box-shadow: 0 0 0 5px rgba(74,222,128,0); }
+}
+
+.hero-greeting {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  margin: 0 auto 1rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.35s forwards;
+}
+
+.hero-greeting .name {
+  color: var(--violet-light);
+  font-weight: 500;
+}
+
+.hero-greeting .alias-line {
+  display: block;
+}
+
+.hero-profile {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin: 0 auto 1.35rem;
+  display: block;
+  border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.04);
+  padding: 0.3rem;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.43s forwards;
+}
+
+.hero-profile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  transform: scale(1.16);
+}
+
+h1 {
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.7s 0.5s forwards;
+}
+
+.hero-title-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.grad-text {
+  background: linear-gradient(135deg, #f8f4ff 0%, #b57bee 35%, #5b8dee 65%, #ee5bae 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 400px;
+  margin: 0 auto;
+  font-weight: 400;
+  text-align: justify;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.65s forwards;
+}
+
+.hero-sub strong { color: var(--text); font-weight: 600; }
+
+.hero-ctas {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.6s 0.8s forwards;
+}
+
+.btn-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--violet);
+  color: #fff;
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.25s;
+  box-shadow: 0 0 30px rgba(124,92,252,0.3);
+}
+
+.btn-main:hover {
+  background: #9b7dfd;
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(124,92,252,0.5);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--glass);
+  color: var(--text);
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.25s;
+  backdrop-filter: blur(8px);
+}
+
+.btn-ghost:hover {
+  border-color: rgba(124,92,252,0.4);
+  background: rgba(124,92,252,0.08);
+  transform: translateY(-2px);
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--glass-border);
+  opacity: 0;
+  animation: fadeUp 0.6s 1s forwards;
+}
+
+.stat-val {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--violet-light), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+
+/* ── SECTION BASE ── */
+.section {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  color: var(--violet-light);
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.section-tag::before { content: '◆'; font-size: 1rem; }
+
+h2 {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.section-sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  max-width: 520px;
+  margin-bottom: 3.5rem;
+}
+
+/* ── SOBRE MÍ ── */
+#sobre .layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  font-weight: 20px;
+}
+
+.sobre-card {
+  background: var(--card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.sobre-card p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.9;
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.sobre-card p:last-child { margin-bottom: 0; }
+.sobre-card p strong { color: var(--text); font-weight: 600; }
+
+.aportes-card {
+  background: var(--card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.aportes-header {
+  padding: 1.25rem 1.75rem;
+  border-bottom: 1px solid var(--glass-border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--violet-light);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.aporte-item {
+  padding: 1rem 1.75rem;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+
+.aporte-item:last-child { border-bottom: none; }
+
+.aporte-item:hover {
+  background: var(--card-hover);
+  color: var(--text);
+  padding-left: 2.25rem;
+}
+
+.aporte-icon {
+  width: 28px; height: 28px;
+  background: rgba(124,92,252,0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+  color: var(--violet-light);
+}
+
+/* ── PROYECTOS ── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.project-card {
+  background: var(--card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: default;
+  backdrop-filter: blur(10px);
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 0% 0%, var(--violet-glow) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.project-card:hover {
+  border-color: rgba(124,92,252,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(124,92,252,0.15);
+}
+
+.project-card:hover::before { opacity: 1; }
+
+.project-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.project-icon {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, rgba(124,92,252,0.2), rgba(167,139,250,0.1));
+  border: 1px solid rgba(124,92,252,0.25);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.project-icon-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.project-logo-inline {
+  width: 88px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.project-logo-inline img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.project-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted2);
+}
+
+.project-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.project-tagline {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 1.25rem;
+}
+
+.project-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+}
+
+.detail-row {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.detail-key {
+  color: var(--violet-light);
+  font-family: 'JetBrains Mono', monospace;
+  flex-shrink: 0;
+  width: 75px;
+}
+
+.detail-val { color: var(--muted); line-height: 1.5; }
+
+.project-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(124,92,252,0.12);
+  border: 1px solid rgba(124,92,252,0.2);
+  color: var(--violet-light);
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+}
+
+.project-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.project-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  transition: all 0.2s;
+  position: relative;
+  z-index: 2;
+}
+
+.project-links a:hover {
+  color: var(--violet-light);
+  border-color: rgba(124,92,252,0.35);
+  background: rgba(124,92,252,0.08);
+}
+
+.project-links a.code-disabled,
+.project-links a.code-disabled:hover {
+  color: var(--muted2);
+  border-color: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  cursor: not-allowed;
+}
+
+/* ── STACK ── */
+.stack-layout {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.stack-card {
+  background: var(--card);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.stack-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--violet), var(--pink));
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.stack-card:hover {
+  border-color: rgba(124,92,252,0.3);
+  background: var(--card-hover);
+  transform: translateY(-3px);
+}
+
+.stack-card:hover::after { transform: scaleX(1); }
+
+.stack-emoji {
+  font-size: 1.75rem;
+  margin-bottom: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--violet-light);
+}
+
+.stack-emoji .icon-svg { width: 30px; height: 30px; }
+
+.icon-svg {
+  width: 1em;
+  height: 1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hero-wave {
+  width: 0.95rem;
+  height: 0.95rem;
+  margin-right: 0.2rem;
+  vertical-align: -0.14rem;
+  color: var(--violet-light);
+}
+
+.aporte-icon .icon-svg { width: 16px; height: 16px; }
+.project-icon .icon-svg { width: 20px; height: 20px; color: var(--violet-light); }
+.chip-icon .icon-svg { width: 15px; height: 15px; color: var(--violet-light); }
+
+.stack-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+
+.stack-desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── CONTACTO ── */
+#contacto-section {
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.contacto-box {
+  background: linear-gradient(135deg, rgba(124,92,252,0.08) 0%, rgba(244,114,182,0.05) 50%, rgba(34,211,238,0.05) 100%);
+  border: 1px solid rgba(124,92,252,0.2);
+  border-radius: 28px;
+  padding: 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.contacto-box::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(124,92,252,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.contacto-box h2 {
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  margin-bottom: 1rem;
+}
+
+.contacto-box .sub {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  max-width: 480px;
+  margin: 0 auto 2.5rem;
+}
+
+.contact-methods {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.contact-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 0.8rem 1.4rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.2s;
+  backdrop-filter: blur(8px);
+}
+
+.contact-chip:hover {
+  border-color: rgba(124,92,252,0.4);
+  background: rgba(124,92,252,0.1);
+  transform: translateY(-2px);
+}
+
+.chip-icon {
+  width: 28px; height: 28px;
+  background: rgba(124,92,252,0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(74,222,128,0.08);
+  border: 1px solid rgba(74,222,128,0.2);
+  border-radius: 100px;
+  padding: 0.4rem 1rem;
+  font-size: 0.72rem;
+  color: #4ade80;
+  font-weight: 500;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--glass-border);
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-size: 0.75rem;
+  color: var(--muted2);
+}
+
+footer span { display: flex; align-items: center; gap: 0.4rem; }
+
+/* ── DIVIDER ── */
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--glass-border);
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { display: none; }
+  #mini-galaxy {
+    width: 220px;
+    height: 220px;
+    right: 2.2rem;
+    top: 72vh;
+    opacity: 0.75;
+  }
+  .hero-layout { gap: 1.6rem; }
+  .hero-intro {
+    margin: 0 auto;
+    padding: 1.25rem 1rem;
+  }
+  .hero-main {
+    text-align: center;
+    transform: none;
+  }
+  .hero-profile { margin: 0 auto 1.2rem; }
+  .hero-sub { margin: 0 auto; }
+  #hero {
+    justify-content: center;
+    padding: 7rem 1.5rem 3rem;
+  }
+  .hero-title-line { white-space: normal; }
+  .hero-stats { gap: 1.5rem; flex-wrap: wrap; }
+  #sobre .layout { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .stack-layout { grid-template-columns: 1fr 1fr; }
+  .section { padding: 4rem 1.5rem; }
+  .contacto-box { padding: 2.5rem 1.5rem; }
+  footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<canvas id="mini-galaxy"></canvas>
+
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-wave" viewBox="0 0 24 24">
+    <path d="M5 13c1.2-1.6 2.8-2.4 4.6-2.4 2.6 0 3.5 2.8 5.8 2.8 1.4 0 2.5-.6 3.6-1.9"/>
+    <path d="M12.5 4.5c2.2 1.3 3.1 3.5 3.1 6"/>
+  </symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24">
+    <rect x="3" y="4" width="18" height="12" rx="2"/>
+    <path d="M8 20h8"/>
+    <path d="M12 16v4"/>
+  </symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24">
+    <path d="M13 2L3 14h7l-1 8 12-14h-7z"/>
+  </symbol>
+  <symbol id="i-brush" viewBox="0 0 24 24">
+    <path d="M14 4l6 6"/>
+    <path d="M8 20c2 0 3.5-1.1 4.2-2.7.6-1.4 1.8-2.5 3.1-3.2L20 9.4 14.6 4l-4.8 4.8c-.7.7-1.3 1.7-1.4 2.8-.2 1.6-.8 2.7-2.1 4-1 1-1.3 2.4-.9 3.5.9.5 1.8.9 2.6.9z"/>
+  </symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24">
+    <path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+  </symbol>
+  <symbol id="i-link" viewBox="0 0 24 24">
+    <path d="M10 13a5 5 0 0 1 0-7l2-2a5 5 0 0 1 7 7l-1.5 1.5"/>
+    <path d="M14 11a5 5 0 0 1 0 7l-2 2a5 5 0 0 1-7-7L6.5 11.5"/>
+  </symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24">
+    <rect x="4" y="8" width="16" height="11" rx="3"/>
+    <path d="M12 3v3"/>
+    <path d="M8 12h.01M16 12h.01"/>
+    <path d="M9 16h6"/>
+  </symbol>
+  <symbol id="i-database" viewBox="0 0 24 24">
+    <ellipse cx="12" cy="5" rx="8" ry="3"/>
+    <path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/>
+    <path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/>
+  </symbol>
+  <symbol id="i-layout" viewBox="0 0 24 24">
+    <rect x="3" y="4" width="18" height="16" rx="2"/>
+    <path d="M3 10h18"/>
+    <path d="M9 10v10"/>
+  </symbol>
+  <symbol id="i-code" viewBox="0 0 24 24">
+    <path d="M8 16l-4-4 4-4"/>
+    <path d="M16 8l4 4-4 4"/>
+    <path d="M13 5l-2 14"/>
+  </symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24">
+    <path d="M12 3l9 5-9 5-9-5z"/>
+    <path d="M3 12l9 5 9-5"/>
+    <path d="M3 16l9 5 9-5"/>
+  </symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24">
+    <rect x="7" y="7" width="10" height="10" rx="2"/>
+    <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+  </symbol>
+  <symbol id="i-git" viewBox="0 0 24 24">
+    <path d="M6 3v12"/>
+    <path d="M6 15c0-2.2 1.8-4 4-4h8"/>
+    <circle cx="6" cy="3" r="2"/>
+    <circle cx="6" cy="15" r="2"/>
+    <circle cx="18" cy="11" r="2"/>
+  </symbol>
+  <symbol id="i-network" viewBox="0 0 24 24">
+    <rect x="10" y="3" width="4" height="4" rx="1"/>
+    <rect x="3" y="17" width="4" height="4" rx="1"/>
+    <rect x="17" y="17" width="4" height="4" rx="1"/>
+    <path d="M12 7v4"/>
+    <path d="M12 11L5 17"/>
+    <path d="M12 11l7 6"/>
+  </symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="14" rx="2"/>
+    <path d="M4 7l8 6 8-6"/>
+  </symbol>
+  <symbol id="i-github" viewBox="0 0 24 24">
+    <path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.9c-2.9.6-3.5-1.2-3.5-1.2-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.6 1.1 1.6 1.1.9 1.5 2.4 1.1 2.9.8.1-.7.4-1.1.7-1.4-2.3-.3-4.8-1.2-4.8-5.1 0-1.1.4-2 1.1-2.8-.1-.3-.5-1.3.1-2.7 0 0 .9-.3 2.9 1.1.8-.2 1.7-.4 2.6-.4.9 0 1.8.1 2.6.4 2-1.4 2.9-1.1 2.9-1.1.6 1.4.2 2.3.1 2.7.7.8 1.1 1.7 1.1 2.8 0 3.9-2.5 4.8-4.8 5.1.4.3.8 1 .8 2v3c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/>
+  </symbol>
+</svg>
+
+<div class="content">
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-star"></div>
+    Paula Labra
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre mí</a></li>
+    <li><a href="#proyectos">Proyectos</a></li>
+    <li><a href="#stack">Stack</a></li>
+    <li><a href="#contacto" class="nav-cta">Contactar</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-layout">
+      <div class="hero-main">
+        <div class="hero-badge">
+          <span class="pulse"></span>
+          Señal activa — Disponible para proyectos
+        </div>
+        <h1>
+          <span class="hero-title-line">Construyo el</span>
+          <span class="hero-title-line grad-text">universo web</span>
+          <span class="hero-title-line">que imaginas.</span>
+        </h1>
+        <div class="hero-ctas">
+          <a href="#proyectos" class="btn-main">Ver proyectos →</a>
+          <a href="#contacto" class="btn-ghost">Contactar</a>
+        </div>
+        <div class="hero-stats">
+          <div>
+            <div class="stat-val">3+</div>
+            <div class="stat-label">Proyectos desarrollados</div>
+          </div>
+          <div>
+            <div class="stat-val">6</div>
+            <div class="stat-label">Tecnologías dominadas</div>
+          </div>
+          <div>
+            <div class="stat-val">100%</div>
+            <div class="stat-label">Interfaces personalizadas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero-card-section">
+  <div class="hero-intro">
+    <p class="hero-greeting">
+      👋¡Hola!, soy <span class="name">Paula Labra.</span>
+      <span class="alias-line">Alias <span class="name"><em>"Deshi".</em></span></span>
+    </p>
+    <div class="hero-profile">
+      <img src="Images/LogoCat-transparent.png" alt="Icono de perfil" class="hero-profile-img">
+    </div>
+    <p class="hero-sub">
+      Soy una estudiante de <strong>Ingeniería Civil en Informática</strong> en la <strong><em>Universidad del Bío Bío</em></strong>. Actualmente especializada en frontend. Diseño e implemento landing pages modernas, rápidas y bien estructuradas que convierten ideas en productos reales.
+    </p>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- SOBRE MÍ -->
+<section class="section" id="sobre">
+  <div class="reveal">
+    <p class="section-tag">sobre mí</p>
+    <h2>Por qué elegirme.</h2>
+    <p class="section-sub">No solo programo — entiendo el producto, el diseño y la lógica detrás de cada decisión.</p>
+  </div>
+  <div class="layout reveal">
+    <div class="sobre-card">
+      <p>Tengo un interés genuino en el desarrollo frontend y la construcción de productos digitales bien pensados.</p>
+      <p>Me enfoco en escribir código limpio y mantenible, priorizando rendimiento, diseño funcional y microinteracciones que eleven la experiencia del usuario.</p>
+      <p>He trabajado en proyectos que abarcan desarrollo web, bases de datos y lógica aplicada, lo que me da una visión <strong>completa del sistema</strong> — no solo la interfaz.</p>
+    </div>
+    <div class="aportes-card">
+      <div class="aportes-header">◆ en qué puedo aportar</div>
+      <div class="aporte-item">
+        <div class="aporte-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-monitor"></use></svg></div>
+        Landing pages modernas y responsivas
+      </div>
+      <div class="aporte-item">
+        <div class="aporte-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-bolt"></use></svg></div>
+        Optimización de rendimiento y código limpio
+      </div>
+      <div class="aporte-item">
+        <div class="aporte-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-brush"></use></svg></div>
+        Implementación fiel de diseños UI
+      </div>
+      <div class="aporte-item">
+        <div class="aporte-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-folder"></use></svg></div>
+        Control de versiones con Git & GitHub
+      </div>
+      <div class="aporte-item">
+        <div class="aporte-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-link"></use></svg></div>
+        Interfaces conectadas a lógica de backend
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- PROYECTOS -->
+<section class="section" id="proyectos">
+  <div class="reveal">
+    <p class="section-tag">proyectos</p>
+    <h2>Lo que he construido.</h2>
+    <p class="section-sub">Cada proyecto tiene un problema real, una solución concreta y tecnologías elegidas con criterio. Seleccione "Demo" para visualizar las demostraciones Frontend de cada proyecto.</p>
+  </div>
+  <div class="projects-grid">
+
+    <div class="project-card reveal">
+      <div class="project-top">
+        <div class="project-icon-wrap">
+          <div class="project-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-bot"></use></svg></div>
+          <div class="project-logo-inline">
+            <img src="./Images/log nolan-04.png" alt="Nolan AI logo" onerror="this.onerror=null;this.src='nolanai/img/logos_productos/log nolan-04.png';">
+          </div>
+        </div>
+        <span class="project-num">01</span>
+      </div>
+      <div class="project-name">Proyectos en Nolan AI</div>
+      <div class="project-tagline">Landings conceptual para empresa de productos de IA orientado a atención automatizada.</div>
+      <div class="project-details">
+        <div class="detail-row">
+          <span class="detail-key">Problema</span>
+          <span class="detail-val">Comunicar valor de producto AI de forma clara e impactante</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Solución</span>
+          <span class="detail-val">Animaciones con rAF, diseño enfocado en conversión</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Resultado</span>
+          <span class="detail-val">Carga &lt;1s, cero dependencias externas</span>
+        </div>
+      </div>
+      <div class="project-footer">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+        </div>
+        <div class="project-links">
+          <a href="./Proyectos/proyecto-01.html" target="_blank" rel="noopener noreferrer">Demo ↗</a>
+          <a href="#" class="code-disabled" aria-disabled="true" title="inhanilitado temporalmente" onclick="return false;">Código ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-top">
+        <div class="project-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-database"></use></svg></div>
+        <span class="project-num">02</span>
+      </div>
+      <div class="project-name">Sistema Gestión Académica</div>
+      <div class="project-tagline">Aplicación web para administración de datos con lógica de base de datos integrada.</div>
+      <div class="project-details">
+        <div class="detail-row">
+          <span class="detail-key">Problema</span>
+          <span class="detail-val">Gestión manual y desordenada de datos académicos</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Solución</span>
+          <span class="detail-val">Interfaz centralizada + queries SQL optimizadas</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Resultado</span>
+          <span class="detail-val">CRUD completo, reducción de errores operativos</span>
+        </div>
+      </div>
+      <div class="project-footer">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">PostgreSQL</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="code-disabled" aria-disabled="true" title="inhabilitado temporalmente" onclick="return false;">Demo ↗</a>
+          <a href="#" class="code-disabled" aria-disabled="true" title="inhanilitado temporalmente" onclick="return false;">Código ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card reveal">
+      <div class="project-top">
+        <div class="project-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-layout"></use></svg></div>
+        <span class="project-num">03</span>
+      </div>
+      <div class="project-name">Proyectos de Bioinformática</div>
+      <div class="project-tagline">Trabajos de investigación en bioinformática con enfoque en análisis de secuencias.</div>
+      <div class="project-details">
+        <div class="detail-row">
+          <span class="detail-key">Problema</span>
+          <span class="detail-val">Inconsistencia visual entre proyectos repetitivos, búsqueda de secuencias.</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Solución</span>
+          <span class="detail-val">Plantilla de diseño reutilizable, sistema de búsqueda optimizado</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-key">Resultado</span>
+          <span class="detail-val">Mejora en la consistencia visual y eficiencia en la búsqueda de secuencias.</span>
+        </div>
+      </div>
+      <div class="project-footer">
+        <div class="project-tags">
+          <span class="tag">Anaconda</span>
+          <span class="tag">Jupiter Notebook</span>
+          <span class="tag">Python</span>
+        </div>
+        <div class="project-links">
+          <a href="#" class="code-disabled" aria-disabled="true" title="inhabilitado temporalmente" onclick="return false;">Demo ↗</a>
+          <a href="#" class="code-disabled" aria-disabled="true" title="inhanilitado temporalmente" onclick="return false;">Código ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Placeholder -->
+    <div class="project-card reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:0.75rem;border-style:dashed;min-height:280px;">
+      <div style="font-size:2rem;opacity:0.2;">+</div>
+      <div class="project-num" style="font-size:0.7rem;">Próximamente</div>
+      <div class="project-tagline" style="max-width:200px;margin:0;">Nuevos proyectos en camino. Actualizando pronto.</div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- STACK -->
+<section class="section" id="stack">
+  <div class="reveal">
+    <p class="section-tag">stack</p>
+    <h2>Con qué trabajo.</h2>
+    <p class="section-sub">Solo lo que realmente domino. Sin inflar el CV con herramientas que apenas conozco.</p>
+  </div>
+  <div class="stack-layout reveal">
+    <div class="stack-card">
+      <span class="stack-emoji"><svg class="icon-svg" aria-hidden="true"><use href="#i-code"></use></svg></span>
+      <div class="stack-name">HTML</div>
+      <div class="stack-desc">Semántica, accesibilidad, estructura limpia y significativa.</div>
+    </div>
+    <div class="stack-card">
+      <span class="stack-emoji"><svg class="icon-svg" aria-hidden="true"><use href="#i-layers"></use></svg></span>
+      <div class="stack-name">CSS</div>
+      <div class="stack-desc">Flexbox, Grid, animaciones, custom properties y diseño responsivo.</div>
+    </div>
+    <div class="stack-card">
+      <span class="stack-emoji"><svg class="icon-svg" aria-hidden="true"><use href="#i-cpu"></use></svg></span>
+      <div class="stack-name">JavaScript</div>
+      <div class="stack-desc">Vanilla JS, manipulación del DOM, lógica de interacción real.</div>
+    </div>
+    <div class="stack-card">
+      <span class="stack-emoji"><svg class="icon-svg" aria-hidden="true"><use href="#i-git"></use></svg></span>
+      <div class="stack-name">Git & GitHub</div>
+      <div class="stack-desc">Control de versiones, flujo de trabajo colaborativo, historial limpio.</div>
+    </div>
+    <div class="stack-card">
+      <span class="stack-emoji"><svg class="icon-svg" aria-hidden="true"><use href="#i-database"></use></svg></span>
+      <div class="stack-name">SQL / Oracle</div>
+      <div class="stack-desc">Bases de datos relacionales, modelado, queries y optimización.</div>
+    </div>
+    <div class="stack-card">
+      <span class="stack-emoji"><svg class="icon-svg" aria-hidden="true"><use href="#i-network"></use></svg></span>
+      <div class="stack-name">Arquitectura</div>
+      <div class="stack-desc">Fundamentos de software, lógica aplicada, pensamiento de sistemas.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto-section" id="contacto">
+  <div id="contacto"></div>
+  <div class="contacto-box reveal">
+    <h2>¿Tienes una idea?<br><span class="grad-text">Trabajemos en ello.</span></h2>
+    <p class="sub">Abierta a colaboraciones, práctica profesional o proyectos freelance. Si tienes una landing en mente, puedo implementarla bien.</p>
+    <div class="contact-methods">
+      <a href="mailto:tu@correo.com" class="contact-chip">
+        <div class="chip-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-mail"></use></svg></div>
+        paulalabra18@gmail.com
+      </a>
+      <a href="https://github.com/Deshid" class="contact-chip" target="_blank">
+        <div class="chip-icon"><svg class="icon-svg" aria-hidden="true"><use href="#i-github"></use></svg></div>
+        github.com/Deshid
+      </a>
+    </div>
+    <div class="status-pill">
+      <span style="width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse-dot 2s infinite;display:inline-block;"></span>
+      Disponible para nuevos proyectos
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>Paula Labra — Frontend Developer</span>
+  <span style="color:var(--muted2);">Hecho con criterio · 2026</span>
+</footer>
+
+</div><!-- /content -->
+
+<script>
+// ── CANVAS PARTICLES ──
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles = [];
+let nebulaClouds = [];
+let starDust = [];
+
+const miniGalaxyCanvas = document.getElementById('mini-galaxy');
+const gctx = miniGalaxyCanvas.getContext('2d');
+let miniGalaxyPoints = [];
+let miniGalaxyDust = [];
+let miniGalaxySize = 320;
+let miniGalaxyAngle = 0;
+const miniGalaxyTilt = -0.42;
+let bgScrollDrift = 0;
+let lastScrollY = window.scrollY;
+let shootingStars = [];
+let nextShootingStarAt = 0;
+let bgStars = [];
+let animationFrameId = null;
+let isAnimating = false;
+let resizeRaf = null;
+
+const SHOOTING_STAR_CONFIG = {
+  maxActive: 3,
+  minDelayMs: 900,
+  maxDelayMs: 2600,
+  minSpeed: 10,
+  maxSpeed: 17,
+  minLength: 130,
+  maxLength: 260
+};
+
+const BACKGROUND_SPACE_CONFIG = {
+  nebulaCount: 7,
+  dustCount: 220
+};
+
+const MINI_GALAXY_CONFIG = {
+  count: 1850,
+  dustCount: 420,
+  branches: 3,
+  spin: 2.65,
+  armJitter: 0.46,
+  flatten: 0.58,
+  inside: { r: 255, g: 228, b: 120 }, // amarillo brillante
+  outside: { r: 9, g: 73, b: 240 },
+  core: { r: 255, g: 246, b: 206 }
+};
+
+function mixColor(a, b, t) {
+  return {
+    r: a.r + (b.r - a.r) * t,
+    g: a.g + (b.g - a.g) * t,
+    b: a.b + (b.b - a.b) * t
+  };
+}
+
+function rand(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function scheduleNextShootingStar(now) {
+  nextShootingStarAt = now + rand(SHOOTING_STAR_CONFIG.minDelayMs, SHOOTING_STAR_CONFIG.maxDelayMs);
+}
+
+function createShootingStar() {
+  const angle = rand(0.28, 0.62);
+  const speed = rand(SHOOTING_STAR_CONFIG.minSpeed * 0.8, SHOOTING_STAR_CONFIG.maxSpeed * 1.18);
+  const vx = Math.cos(angle) * speed;
+  const vy = Math.sin(angle) * speed;
+  const maxLife = Math.floor(rand(44, 70));
+  const baseWidth = rand(0.9, 2.8);
+  const baseAlpha = rand(0.62, 1);
+  const speedVariance = rand(0.92, 1.14);
+  const flickerAmp = rand(0.05, 0.22);
+  const flickerSpeed = rand(0.12, 0.3);
+
+  return {
+    x: rand(W * 0.08, W * 0.82),
+    y: rand(H * 0.05, H * 0.35),
+    vx,
+    vy,
+    speedVariance,
+    life: maxLife,
+    maxLife,
+    length: rand(SHOOTING_STAR_CONFIG.minLength, SHOOTING_STAR_CONFIG.maxLength),
+    width: baseWidth,
+    alpha: baseAlpha,
+    flicker: Math.random() * Math.PI * 2,
+    flickerAmp,
+    flickerSpeed,
+    hue: rand(210, 280),
+    fadeInFrames: Math.floor(rand(10, 18))
+  };
+}
+
+function updateAndDrawShootingStars(now, drift) {
+  if (now >= nextShootingStarAt && shootingStars.length < SHOOTING_STAR_CONFIG.maxActive) {
+    shootingStars.push(createShootingStar());
+    scheduleNextShootingStar(now);
+  }
+
+  for (let i = shootingStars.length - 1; i >= 0; i--) {
+    const s = shootingStars[i];
+    s.flicker += s.flickerSpeed;
+    const speedPulse = 1 + Math.sin(s.flicker * 0.55) * 0.05;
+    const stepSpeed = s.speedVariance * speedPulse;
+    // Se acoplan al desplazamiento del fondo para que al hacer scroll también se "arrastren"
+    s.x += s.vx * stepSpeed + drift * 0.07;
+    s.y += s.vy * stepSpeed + drift * 0.95;
+    s.life -= 1;
+
+    const t = 1 - s.life / s.maxLife;
+    const fade = Math.max(0, 1 - t);
+    const lived = s.maxLife - s.life;
+    const appear = Math.min(1, lived / s.fadeInFrames);
+    const flickerGlow = 1 + Math.sin(s.flicker) * s.flickerAmp;
+    const scrollFade = Math.max(0.35, 1 - Math.min(1, Math.abs(drift) * 0.18));
+    const alpha = s.alpha * fade * fade * appear * flickerGlow * scrollFade;
+    const tailLen = s.length * (0.45 + fade * 0.55);
+    const dynamicWidth = s.width * (0.9 + Math.sin(s.flicker * 1.3) * 0.12 + fade * 0.18);
+    const mag = Math.hypot(s.vx * stepSpeed, s.vy * stepSpeed) || 1;
+    const nx = s.vx / mag;
+    const ny = s.vy / mag;
+    const tx = s.x - nx * tailLen;
+    const ty = s.y - ny * tailLen;
+
+    const grad = ctx.createLinearGradient(s.x, s.y, tx, ty);
+    grad.addColorStop(0, `hsla(${s.hue}, 100%, 92%, ${Math.min(1, alpha + 0.1)})`);
+    grad.addColorStop(0.35, `hsla(${s.hue}, 95%, 78%, ${alpha})`);
+    grad.addColorStop(1, `hsla(${s.hue}, 95%, 70%, 0)`);
+
+    ctx.beginPath();
+    ctx.moveTo(s.x, s.y);
+    ctx.lineTo(tx, ty);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = dynamicWidth;
+    ctx.lineCap = 'round';
+    ctx.globalAlpha = 1;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, dynamicWidth * 1.45, 0, Math.PI * 2);
+    ctx.fillStyle = `hsla(${s.hue}, 100%, 95%, ${Math.min(1, alpha + 0.15)})`;
+    ctx.shadowColor = `hsla(${s.hue}, 100%, 88%, ${alpha})`;
+    ctx.shadowBlur = 18;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    if (s.life <= 0 || s.x > W + 120 || s.x < -120 || s.y > H + 160 || s.y < -160) {
+      shootingStars.splice(i, 1);
+    }
+  }
+}
+
+function setupMiniGalaxyCanvas() {
+  miniGalaxySize = window.innerWidth < 768 ? 320 : 480;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  miniGalaxyCanvas.width = Math.floor(miniGalaxySize * dpr);
+  miniGalaxyCanvas.height = Math.floor(miniGalaxySize * dpr);
+  miniGalaxyCanvas.style.width = `${miniGalaxySize}px`;
+  miniGalaxyCanvas.style.height = `${miniGalaxySize}px`;
+  gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function createMiniGalaxyPoint() {
+  const arm = Math.floor(Math.random() * MINI_GALAXY_CONFIG.branches);
+  const radiusNorm = Math.pow(Math.random(), 0.74);
+  const radius = radiusNorm * (miniGalaxySize * 0.43);
+  const branchBase = (arm / MINI_GALAXY_CONFIG.branches) * Math.PI * 2;
+  const angle = branchBase + radius * MINI_GALAXY_CONFIG.spin * 0.1 + (Math.random() - 0.5) * MINI_GALAXY_CONFIG.armJitter;
+
+  // Mayor gradiente cromático y estrellas blancas esporádicas para realismo
+  let color;
+  if (Math.random() < 0.085) {
+    color = { r: 255, g: 252, b: 245 };
+  } else {
+    const warmToCold = mixColor(MINI_GALAXY_CONFIG.inside, MINI_GALAXY_CONFIG.outside, radiusNorm);
+    const tint = (Math.random() - 0.5) * 18;
+    color = {
+      r: Math.max(0, Math.min(255, warmToCold.r + tint)),
+      g: Math.max(0, Math.min(255, warmToCold.g + tint * 0.4)),
+      b: Math.max(0, Math.min(255, warmToCold.b - tint * 0.35))
+    };
+  }
+
+  return {
+    radius,
+    angle,
+    depth: Math.random(),
+    offsetX: (Math.random() - 0.5) * radiusNorm * 11,
+    offsetY: (Math.random() - 0.5) * radiusNorm * 9,
+    size: Math.random() * 1.25 + 0.2,
+    alpha: Math.random() * 0.5 + 0.16,
+    twinkle: Math.random() * Math.PI * 2,
+    twinkleSpeed: Math.random() * 0.045 + 0.008,
+    color
+  };
+}
+
+function createMiniGalaxyDust() {
+  const arm = Math.floor(Math.random() * MINI_GALAXY_CONFIG.branches);
+  const radiusNorm = Math.pow(Math.random(), 0.9);
+  const radius = radiusNorm * (miniGalaxySize * 0.41);
+  const branchBase = (arm / MINI_GALAXY_CONFIG.branches) * Math.PI * 2;
+  const angle = branchBase + radius * (MINI_GALAXY_CONFIG.spin * 0.082) + (Math.random() - 0.5) * 0.62;
+
+  return {
+    radius,
+    angle,
+    spread: (Math.random() - 0.5) * radiusNorm * 18,
+    size: Math.random() * 2.2 + 1.2,
+    alpha: Math.random() * 0.11 + 0.025
+  };
+}
+
+function initMiniGalaxy() {
+  setupMiniGalaxyCanvas();
+  miniGalaxyPoints = Array.from({ length: MINI_GALAXY_CONFIG.count }, createMiniGalaxyPoint);
+  miniGalaxyDust = Array.from({ length: MINI_GALAXY_CONFIG.dustCount }, createMiniGalaxyDust);
+}
+
+function drawMiniGalaxy() {
+  gctx.clearRect(0, 0, miniGalaxySize, miniGalaxySize);
+
+  const cx = miniGalaxySize * 0.5;
+  const cy = miniGalaxySize * 0.5;
+
+  // Halo galáctico amplio
+  const halo = gctx.createRadialGradient(cx, cy, miniGalaxySize * 0.02, cx, cy, miniGalaxySize * 0.46);
+  halo.addColorStop(0, 'rgba(255,236,170,0.20)');
+  halo.addColorStop(0.38, 'rgba(135,160,255,0.12)');
+  halo.addColorStop(1, 'rgba(0,0,0,0)');
+  gctx.fillStyle = halo;
+  gctx.beginPath();
+  gctx.arc(cx, cy, miniGalaxySize * 0.46, 0, Math.PI * 2);
+  gctx.fill();
+
+  // Núcleo brillante con doble gradiente
+  const core = gctx.createRadialGradient(cx, cy, 0, cx, cy, miniGalaxySize * 0.11);
+  core.addColorStop(0, `rgba(${MINI_GALAXY_CONFIG.core.r},${MINI_GALAXY_CONFIG.core.g},${MINI_GALAXY_CONFIG.core.b},0.98)`);
+  core.addColorStop(0.3, 'rgba(255,236,168,0.75)');
+  core.addColorStop(0.65, 'rgba(255,176,104,0.24)');
+  core.addColorStop(1, 'rgba(0,0,0,0)');
+  gctx.fillStyle = core;
+  gctx.beginPath();
+  gctx.arc(cx, cy, miniGalaxySize * 0.115, 0, Math.PI * 2);
+  gctx.fill();
+
+  const coreHot = gctx.createRadialGradient(cx, cy, 0, cx, cy, miniGalaxySize * 0.048);
+  coreHot.addColorStop(0, 'rgba(255,255,244,0.95)');
+  coreHot.addColorStop(1, 'rgba(255,255,244,0)');
+  gctx.fillStyle = coreHot;
+  gctx.beginPath();
+  gctx.arc(cx, cy, miniGalaxySize * 0.05, 0, Math.PI * 2);
+  gctx.fill();
+
+  miniGalaxyAngle -= 0.0031;
+
+  const cosTilt = Math.cos(miniGalaxyTilt);
+  const sinTilt = Math.sin(miniGalaxyTilt);
+
+  // Bandas de polvo (delante de algunas zonas)
+  for (let i = 0; i < miniGalaxyDust.length; i++) {
+    const d = miniGalaxyDust[i];
+    const a = d.angle + miniGalaxyAngle * 0.9;
+    const x = cx + Math.cos(a) * d.radius + d.spread;
+    const y = cy + Math.sin(a) * d.radius * MINI_GALAXY_CONFIG.flatten;
+
+    const dx = x - cx;
+    const dy = y - cy;
+    const rx = dx * cosTilt - dy * sinTilt;
+    const ry = dx * sinTilt + dy * cosTilt;
+    const finalX = cx + rx;
+    const finalY = cy + ry;
+
+    gctx.beginPath();
+    gctx.arc(finalX, finalY, d.size, 0, Math.PI * 2);
+    gctx.fillStyle = `rgba(8, 10, 20, ${d.alpha.toFixed(3)})`;
+    gctx.fill();
+  }
+
+  gctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < miniGalaxyPoints.length; i++) {
+    const p = miniGalaxyPoints[i];
+    p.twinkle += p.twinkleSpeed;
+    const pulse = (Math.sin(p.twinkle) + 1) * 0.5;
+
+    const a = p.angle + miniGalaxyAngle;
+    const x = cx + Math.cos(a) * p.radius + p.offsetX;
+    const y = cy + Math.sin(a) * p.radius * MINI_GALAXY_CONFIG.flatten + p.offsetY;
+
+    const dx = x - cx;
+    const dy = y - cy;
+    const rx = dx * cosTilt - dy * sinTilt;
+    const ry = dx * sinTilt + dy * cosTilt;
+    const finalX = cx + rx;
+    const finalY = cy + ry;
+
+    const size = p.size * (0.5 + pulse * 0.55) * (0.72 + p.depth * 0.42);
+    const alpha = p.alpha * (0.38 + pulse * 0.68) * (0.7 + p.depth * 0.45);
+
+    gctx.fillStyle = `rgba(${p.color.r.toFixed(0)}, ${p.color.g.toFixed(0)}, ${p.color.b.toFixed(0)}, ${alpha.toFixed(3)})`;
+    gctx.beginPath();
+    gctx.arc(finalX, finalY, size, 0, Math.PI * 2);
+    gctx.fill();
+  }
+  gctx.globalCompositeOperation = 'source-over';
+}
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function createNebulaCloud() {
+  const palette = [
+    { r: 136, g: 98, b: 255 },
+    { r: 77, g: 176, b: 255 },
+    { r: 255, g: 116, b: 182 },
+    { r: 120, g: 230, b: 255 }
+  ];
+  const tint = palette[Math.floor(Math.random() * palette.length)];
+  const baseSize = rand(Math.min(W, H) * 0.18, Math.min(W, H) * 0.42);
+  return {
+    x: rand(W * -0.08, W * 1.08),
+    y: rand(H * -0.05, H * 1.05),
+    radiusX: baseSize * rand(1.1, 1.55),
+    radiusY: baseSize * rand(0.62, 1.05),
+    alpha: rand(0.035, 0.085),
+    color: tint,
+    noisePhase: Math.random() * Math.PI * 2,
+    noiseSpeed: rand(0.00018, 0.00046),
+    driftX: rand(-0.018, 0.018),
+    driftY: rand(-0.011, 0.011)
+  };
+}
+
+function createStarDust() {
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: rand(0.3, 1.2),
+    a: rand(0.05, 0.24),
+    vx: rand(-0.02, 0.02),
+    vy: rand(-0.01, 0.03),
+    twinkle: Math.random() * Math.PI * 2,
+    twinkleSpeed: rand(0.008, 0.022)
+  };
+}
+
+function drawNebulaBackdrop(now, drift) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'screen';
+  for (let i = 0; i < nebulaClouds.length; i++) {
+    const n = nebulaClouds[i];
+    n.x = ((n.x + n.driftX) % W + W) % W;
+    n.y = ((n.y + n.driftY + drift * 0.08) % H + H) % H;
+
+    const breathe = (Math.sin(now * n.noiseSpeed + n.noisePhase) + 1) * 0.5;
+    const dynamicAlpha = n.alpha * (0.7 + breathe * 0.6);
+    const dynamicX = n.radiusX * (0.92 + breathe * 0.2);
+    const dynamicY = n.radiusY * (0.9 + breathe * 0.2);
+
+    const grad = ctx.createRadialGradient(n.x, n.y, dynamicX * 0.05, n.x, n.y, dynamicX);
+    grad.addColorStop(0, `rgba(${n.color.r}, ${n.color.g}, ${n.color.b}, ${(dynamicAlpha * 0.95).toFixed(4)})`);
+    grad.addColorStop(0.45, `rgba(${n.color.r}, ${n.color.g}, ${n.color.b}, ${(dynamicAlpha * 0.4).toFixed(4)})`);
+    grad.addColorStop(1, `rgba(${n.color.r}, ${n.color.g}, ${n.color.b}, 0)`);
+
+    ctx.save();
+    ctx.translate(n.x, n.y);
+    ctx.scale(1, dynamicY / dynamicX);
+    ctx.beginPath();
+    ctx.arc(0, 0, dynamicX, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+function drawStarDust(now, drift) {
+  for (let i = 0; i < starDust.length; i++) {
+    const d = starDust[i];
+    d.x = ((d.x + d.vx) % W + W) % W;
+    d.y = ((d.y + d.vy + drift * 0.22) % H + H) % H;
+    d.twinkle += d.twinkleSpeed;
+    const pulse = (Math.sin(d.twinkle + now * 0.0012) + 1) * 0.5;
+
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+    ctx.fillStyle = '#d7e6ff';
+    ctx.globalAlpha = d.a * (0.45 + pulse * 0.85);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+function mkParticle() {
+  const twinkleAmount = Math.random() < 0.25 ? 0 : Math.random() * 0.75 + 0.15;
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.5 + 0.3,
+    vx: (Math.random() - 0.5) * 0.15,
+    vy: (Math.random() - 0.5) * 0.15,
+    a: Math.random() * 0.5 + 0.3,
+    color: Math.random() > 0.6 ? '#afa2ff' : Math.random() > 0.5 ? '#ff9fd2' : '#8cefff',
+    twinkle: Math.random() * Math.PI * 2,
+    twinkleSpeed: Math.random() * 0.06 + 0.02,
+    twinkleAmount,
+    baseGlow: Math.random() * 0.35 + 0.55
+  };
+}
+
+function init() {
+  resize();
+  particles = Array.from({ length: 80 }, mkParticle);
+  nebulaClouds = Array.from({ length: BACKGROUND_SPACE_CONFIG.nebulaCount }, createNebulaCloud);
+  starDust = Array.from({ length: BACKGROUND_SPACE_CONFIG.dustCount }, createStarDust);
+  // Nueva capa de estrellas solo puntitos
+  bgStars = Array.from({ length: 120 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.2 + 0.2,
+    a: Math.random() * 0.5 + 0.3,
+    color: Math.random() > 0.6 ? '#fff' : Math.random() > 0.5 ? '#afa2ff' : '#8cefff',
+    blinkFast: Math.random() < 0.18,
+    blinkPhase: Math.random() * Math.PI * 2,
+    blinkSpeed: Math.random() * 0.22 + 0.24,
+    driftMove: Math.random() < 0.35,
+    vx: (Math.random() - 0.5) * 0.08,
+    vy: (Math.random() - 0.5) * 0.05
+  }));
+  shootingStars = [];
+  scheduleNextShootingStar(performance.now());
+  initMiniGalaxy();
+}
+
+function remapBackgroundLayers(prevW, prevH) {
+  if (!prevW || !prevH || prevW <= 0 || prevH <= 0) return;
+
+  const scaleX = W / prevW;
+  const scaleY = H / prevH;
+  const scaleR = Math.min(W, H) / Math.min(prevW, prevH);
+
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+    p.x *= scaleX;
+    p.y *= scaleY;
+  }
+
+  for (let i = 0; i < bgStars.length; i++) {
+    const s = bgStars[i];
+    s.x *= scaleX;
+    s.y *= scaleY;
+  }
+
+  for (let i = 0; i < starDust.length; i++) {
+    const d = starDust[i];
+    d.x *= scaleX;
+    d.y *= scaleY;
+  }
+
+  for (let i = 0; i < nebulaClouds.length; i++) {
+    const n = nebulaClouds[i];
+    n.x *= scaleX;
+    n.y *= scaleY;
+    n.radiusX *= scaleR;
+    n.radiusY *= scaleR;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  const drift = bgScrollDrift;
+  const now = performance.now();
+  bgScrollDrift *= 0.88;
+
+  drawNebulaBackdrop(now, drift);
+  drawStarDust(now, drift);
+
+  // Capa de estrellas solo puntitos (ahora también se mueven con el scroll)
+  for (let i = 0; i < bgStars.length; i++) {
+    const s = bgStars[i];
+    if (s.driftMove) {
+      s.x = ((s.x + s.vx) % W + W) % W;
+      s.y = ((s.y + s.vy + drift) % H + H) % H;
+    } else {
+      s.y = ((s.y + drift) % H + H) % H;
+    }
+    let alpha = s.a;
+    if (s.blinkFast) {
+      const wave = (Math.sin(now * 0.006 * s.blinkSpeed + s.blinkPhase) + 1) * 0.5;
+      alpha = s.a * (0.16 + Math.pow(wave, 1.8) * 0.84);
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = s.color;
+    ctx.globalAlpha = alpha;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  updateAndDrawShootingStars(now, drift);
+
+  // Capa original de estrellas con líneas
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y = ((p.y + p.vy + drift) % H + H) % H;
+    p.twinkle += p.twinkleSpeed;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    const fade = (Math.sin(p.twinkle) + 1) / 2;
+    const twinkle = (1 - p.twinkleAmount) + fade * p.twinkleAmount;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.a * p.baseGlow * (0.45 + twinkle * 0.85);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // Lines between close particles
+  for (let i = 0; i < particles.length; i++) {
+    const p1 = particles[i];
+    for (let j = i + 1; j < particles.length; j++) {
+      const p2 = particles[j];
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      const distSq = dx * dx + dy * dy;
+      if (distSq < 10000) {
+        const dist = Math.sqrt(distSq);
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = '#7c5cfc';
+        ctx.globalAlpha = (1 - dist/100) * 0.35;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
+  drawMiniGalaxy();
+  animationFrameId = requestAnimationFrame(draw);
+}
+
+function startAnimation() {
+  if (isAnimating) return;
+  isAnimating = true;
+  animationFrameId = requestAnimationFrame(draw);
+}
+
+function stopAnimation() {
+  if (!isAnimating) return;
+  isAnimating = false;
+  if (animationFrameId !== null) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+}
+
+window.addEventListener('resize', () => {
+  if (resizeRaf !== null) return;
+  resizeRaf = requestAnimationFrame(() => {
+    const prevW = W;
+    const prevH = H;
+    resize();
+    remapBackgroundLayers(prevW, prevH);
+    initMiniGalaxy();
+    resizeRaf = null;
+  });
+}, { passive: true });
+
+window.addEventListener('scroll', () => {
+  const currentScrollY = window.scrollY;
+  const delta = currentScrollY - lastScrollY;
+  lastScrollY = currentScrollY;
+
+  bgScrollDrift -= delta * 0.03;
+}, { passive: true });
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    stopAnimation();
+  } else {
+    startAnimation();
+  }
+});
+
+init();
+startAnimation();
+
+// ── SCROLL REVEAL ──
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// Stagger cards
+document.querySelectorAll('.project-card, .stack-card').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 0.07}s`;
+});
+</script>
+</body>
+</html>

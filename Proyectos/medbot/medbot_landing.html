@@ -1,0 +1,3505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedBot | Agendamiento Médico Inteligente</title>
+    <meta name="description" content="Automatiza tu agenda médica, fichas clínicas y atención al paciente con inteligencia artificial. Disponible 24/7.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --secondary: #7CB8E8;
+            --accent: #52C1E0;
+            --bg-cream: #F8FBFD;
+            --bg-light: #EFF6FB;
+            --text-dark: #1E3A5F;
+            --text-gray: #5A6C7D;
+            --white: #FFFFFF;
+            --success: #4ECDC4;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background: var(--bg-cream);
+        }
+
+        /* Wave decorative background */
+        .wave-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .wave-bg svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(74, 144, 226, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(74, 144, 226, 0.08);
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+            gap: 2rem;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-container img {
+            height: 2.8rem;
+            transition: transform 0.3s ease;
+            transform: scale(1.9);
+        }
+
+        .logo-container:hover img {
+            transform: scale(1.35);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 0.85rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            border: none;
+            cursor: pointer;
+            min-height: 44px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 0.85rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            min-height: 44px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Mobile Menu */
+        .mobile-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            padding: 8px;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+
+        .mobile-toggle span {
+            width: 24px;
+            height: 2px;
+            background: var(--text-dark);
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .mobile-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(10px, 8px);
+        }
+
+        .mobile-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        .nav-menu.mobile-active {
+            display: flex;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            right: 0;
+            background: white;
+            flex-direction: column;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            gap: 1.5rem;
+            z-index: 999;
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .nav-actions.mobile-active {
+            display: flex;
+            position: fixed;
+            top: calc(80px + 280px);
+            left: 0;
+            right: 0;
+            background: var(--bg-light);
+            flex-direction: column;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(74, 144, 226, 0.1);
+            gap: 1rem;
+            z-index: 999;
+        }
+
+        .nav-actions.mobile-active .btn-primary {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem 6rem;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-gray);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .hero-features {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .hero-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .hero-feature-item i {
+            color: var(--success);
+            font-size: 1.3rem;
+        }
+
+        .hero-feature-item span {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* Hero visual - Medical dashboard mockup */
+        .hero-visual {
+            position: relative;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 25px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(74, 144, 226, 0.15);
+            position: relative;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        .dashboard-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .status-badge {
+            background: linear-gradient(135deg, var(--success) 0%, #45B8A8 100%);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .appointment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .appointment-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+
+        .appointment-item:hover {
+            transform: translateX(5px);
+        }
+
+        .appointment-time {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 0.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .appointment-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.2rem;
+        }
+
+        .appointment-info p {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+
+        /* Floating elements */
+        .float-icon {
+            position: absolute;
+            background: white;
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .float-icon i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .float-icon-1 {
+            top: -20px;
+            right: -20px;
+            animation-delay: 0s;
+        }
+
+        .float-icon-2 {
+            bottom: -20px;
+            left: -20px;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Features Section */
+        .features-section {
+            background: white;
+            padding: 7rem 2rem;
+            position: relative;
+        }
+
+        .features-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 90px;
+            background: var(--bg-cream);
+            clip-path: ellipse(70% 100% at 50% 0%);
+            z-index: 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+        }
+
+        .features-grid {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-light);
+            padding: 2.5rem;
+            border-radius: 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(74, 144, 226, 0.15);
+            background: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .feature-card p {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        .feature-icon {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.3);
+        }
+
+        .feature-icon i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        /* How it Works Section */
+        .how-it-works {
+            padding: 6rem 2rem;
+            background: var(--bg-cream);
+        }
+
+        .steps-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 3rem;
+            position: relative;
+        }
+
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 15%;
+            width: 70%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+            z-index: 0;
+        }
+
+        .step-item {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);
+            border: 5px solid var(--bg-cream);
+        }
+
+        .step-item h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-dark);
+        }
+
+        .step-item p {
+            color: var(--text-gray);
+            line-height: 1.7;
+        }
+
+        /* WhatsApp Chat Examples */
+        .chat-examples {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .chat-carousel-wrapper {
+            position: relative;
+            margin-top: 3rem;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .chat-carousel {
+            display: flex;
+            gap: 3rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 2rem 2rem 2rem 2rem;
+            scrollbar-width: none;
+        }
+
+        .chat-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chat-card {
+            flex: 0 0 320px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 
+                        0 0 0 8px #1a1a1a,
+                        0 0 0 10px #0d0d0d,
+                        inset 0 0 0 1px #2a2a2a;
+            transition: all 0.4s ease;
+            padding: 10px;
+            position: relative;
+        }
+
+        .chat-card:hover {
+            transform: scale(1.03);
+        }
+        
+
+        .chat-card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 0.9rem;
+            display: flex;
+            align-items: center;
+            border-radius: 24px 24px 0 0;
+            gap: 1rem;
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: white;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .chat-info h4 {
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .chat-info p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+        }
+
+        .chat-messages {
+            padding: 1.8rem 1.3rem;
+            background: linear-gradient(180deg, #F5F7FA 0%, #E8EEF3 100%);
+            min-height: 420px;
+            max-height: 500px;
+            overflow-y: auto;
+             border-radius: 0 0 24px 24px;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 0.9rem 1.2rem;
+            border-radius: 16px;
+            max-width: 80%;
+            line-height: 1.5;
+            font-size: 0.93rem;
+        }
+
+        .chat-message-user {
+            background: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            color: var(--text-dark);
+        }
+
+        .chat-message-bot {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.25);
+        }
+
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .carousel-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            pointer-events: all;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .carousel-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 7rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .cta-section::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-content h2 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .cta-content p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .cta-content .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: none;
+            font-size: 1.1rem;
+            padding: 1.1rem 3rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-content .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: rgba(255, 255, 255, 0.75);
+            padding: 4rem 0 2rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-logo {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo span {
+            color: var(--accent);
+        }
+
+        .footer-links h4 {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            font-size: 1rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.65);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        
+        /* Mobile Phone Chat Interface */
+        .phone-chat-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 8rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phone-chat-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('f4.jpg') center/cover no-repeat;
+            opacity: 0.15;
+            z-index: 0;
+        }
+
+        .phone-chat-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .phone-chat-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .phone-chat-header h2 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .phone-chat-header p {
+            font-size: 1.3rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .phone-mockup-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        /* Phone Device */
+        .phone-device {
+            width: 380px;
+            height: 780px;
+            background: #1a1a1a;
+            border-radius: 45px;
+            box-shadow: 
+                0 0 0 12px #2c2c2c,
+                0 0 0 14px #1a1a1a,
+                0 30px 80px rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            position: relative;
+            animation: phoneFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes phoneFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #1a1a1a;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #f0f4f8 0%, #e8eef4 100%);
+            border-radius: 35px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Chat Interface Inside Phone */
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 1.5rem 1rem 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header-info h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.1rem;
+        }
+
+        .chat-header-info p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .chat-content {
+            padding: 1.5rem;
+            height: calc(100% - 70px);
+            overflow-y: auto;
+            background: linear-gradient(180deg, #f8fafc 0%, #eef3f8 100%);
+        }
+
+        .chat-bubble {
+            max-width: 75%;
+            padding: 0.9rem 1.2rem;
+            border-radius: 18px;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            animation: bubbleSlide 0.3s ease-out;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        @keyframes bubbleSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-bubble.bot {
+            background: white;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            color: var(--text-dark);
+        }
+
+        .chat-bubble.user {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+            color: white;
+        }
+
+        .chat-timestamp {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            text-align: center;
+            margin: 0.8rem 0;
+            opacity: 0.7;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 0.4rem;
+            padding: 1rem 1.2rem;
+            background: white;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-gray);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+            opacity: 0.6;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        /* Phone Features List */
+        .phone-features {
+            max-width: 500px;
+        }
+
+        .phone-features h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(8px);
+            box-shadow: 0 6px 30px rgba(74, 144, 226, 0.15);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .feature-content h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .feature-content p {
+            font-size: 0.95rem;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .features-header h2 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .features-header p {
+            font-size: 1.3rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-card-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* WhatsApp Float */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 2.5rem;
+            right: 2.5rem;
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.5);
+            z-index: 1000;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 35px rgba(37, 211, 102, 0.6);
+        }
+
+        /* Tab Content Visibility */
+        .tab-content {
+            display: none;
+            scroll-margin-top: 80px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Hero Plans Section */
+        .hero-plans {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 5rem 2rem 3rem;
+            text-align: center;
+        }
+
+        .hero-plans h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-dark) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-plans p {
+            font-size: 1.3rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        /* Billing Toggle */
+        .billing-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            background: white;
+            padding: 0.6rem;
+            border-radius: 50px;
+            margin-bottom: 4rem;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.12);
+        }
+
+        .billing-toggle span {
+            color: var(--text-gray);
+            font-weight: 500;
+            padding: 0 1rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: var(--bg-light);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(28px);
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, var(--success), #3BB5AC);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(78, 205, 196, 0.3);
+        }
+
+        /* Plans Section */
+        .plans-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem 6rem;
+        }
+
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .plan-card {
+            background: white;
+            border: 2px solid rgba(74, 144, 226, 0.15);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.08);
+        }
+
+        .plan-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 50px rgba(74, 144, 226, 0.2);
+            border-color: var(--primary);
+        }
+
+        .plan-card.featured {
+            border-color: var(--primary);
+            border-width: 3px;
+            background: linear-gradient(135deg, rgba(74, 144, 226, 0.03), rgba(82, 193, 224, 0.03));
+            transform: scale(1.05);
+            box-shadow: 0 8px 40px rgba(74, 144, 226, 0.2);
+        }
+
+        .plan-card.featured:hover {
+            transform: scale(1.05) translateY(-12px);
+            box-shadow: 0 20px 60px rgba(74, 144, 226, 0.3);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 0.6rem 1.8rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .plan-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .plan-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.25);
+        }
+
+        .plan-card.featured .plan-icon {
+            box-shadow: 0 10px 35px rgba(74, 144, 226, 0.4);
+        }
+
+        .plan-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-description {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .plan-price {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        .price-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        .price-currency {
+            font-size: 1.75rem;
+            vertical-align: top;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            color: var(--text-gray);
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .price-note {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .plan-features {
+            flex-grow: 1;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features ul {
+            list-style: none;
+        }
+
+        .plan-features li {
+            padding: 0.75rem 0;
+            color: var(--text-dark);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        .plan-features li i {
+            color: var(--success);
+            font-size: 1.1rem;
+            margin-top: 0.15rem;
+            flex-shrink: 0;
+        }
+
+        .plan-features li.disabled {
+            color: var(--text-gray);
+            opacity: 0.5;
+        }
+
+        .plan-features li.disabled i {
+            color: var(--text-gray);
+        }
+
+        .plan-cta {
+            width: 100%;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            cursor: pointer;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .plan-cta:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        .plan-card.featured .plan-cta {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+        }
+
+        .plan-card.featured .plan-cta:hover {
+            box-shadow: 0 10px 35px rgba(74, 144, 226, 0.5);
+        }
+
+        /* Comparison Section */
+        .comparison-section {
+            background: white;
+            padding: 6rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .comparison-table {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(74, 144, 226, 0.12);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table thead {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+        }
+
+        .comparison-table thead th {
+            padding: 1.8rem;
+            color: white;
+            font-weight: 700;
+            text-align: left;
+            font-size: 1.05rem;
+        }
+
+        .comparison-table thead th:first-child {
+            border-radius: 30px 0 0 0;
+        }
+
+        .comparison-table thead th:last-child {
+            border-radius: 0 30px 0 0;
+        }
+
+        .comparison-table tbody tr {
+            border-bottom: 1px solid var(--bg-light);
+        }
+
+        .comparison-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-table tbody tr:hover {
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .comparison-table tbody td {
+            padding: 1.5rem 1.8rem;
+            color: var(--text-dark);
+            word-break: break-word;
+        }
+
+        .comparison-table tbody td:first-child {
+            font-weight: 600;
+            color: var(--text-dark);
+            min-width: 180px;
+            word-break: break-word;
+        }
+
+        .comparison-table .check-icon {
+            color: var(--success);
+            font-size: 1.4rem;
+        }
+
+        .comparison-table .times-icon {
+            color: var(--text-gray);
+            font-size: 1.4rem;
+            opacity: 0.3;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+
+        .faq-container {
+            margin-top: 3rem;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.08);
+            border: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        .faq-question {
+            padding: 1.8rem 2.2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+        }
+
+        .faq-question:hover {
+            background: var(--bg-cream);
+        }
+
+        .faq-question i {
+            color: var(--primary);
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .faq-answer-content {
+            padding: 0 2.2rem 1.8rem;
+            color: var(--text-gray);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                padding: 5rem 2rem 4rem;
+            }
+
+            .hero-content h1 {
+                font-size: 3.5rem;
+            }
+
+            .hero-features {
+                flex-wrap: wrap;
+                gap: 2rem;
+                justify-content: center;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .plans-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+
+            .plan-card.featured {
+                transform: scale(1);
+            }
+
+            .plan-card.featured:hover {
+                transform: scale(1) translateY(-10px);
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .comparison-table table {
+                min-width: 600px;
+            }
+
+            .steps-container {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-container::before {
+                display: none;
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            .plans-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .plan-card {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .plan-name {
+                font-size: 1.5rem;
+            }
+
+            .price-amount {
+                font-size: 3rem;
+            }
+
+            .plan-features li {
+                font-size: 0.9rem;
+            }
+
+            .hero-plans {
+                padding: 4rem 1.5rem 2rem;
+            }
+
+            .hero-plans h1 {
+                font-size: 2.2rem;
+            }
+
+            .billing-toggle {
+                margin-bottom: 2.5rem;
+            }
+
+            .hero-features {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                justify-content: center;
+            }
+
+            .hero-feature-item span {
+                font-size: 0.9rem;
+            }
+
+            .comparison-section {
+                padding: 4rem 1.5rem;
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                border-radius: 20px;
+            }
+
+            .comparison-table table {
+                min-width: 600px;
+            }
+
+            .comparison-table thead th {
+                padding: 1.5rem 1.2rem;
+                font-size: 0.95rem;
+            }
+
+            .comparison-table tbody td {
+                padding: 1.2rem;
+                font-size: 0.9rem;
+            }
+
+            .comparison-table tbody td:first-child {
+                min-width: 150px;
+                font-size: 0.9rem;
+            }
+
+            nav {
+                height: 70px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .nav-actions {
+                display: none;
+            }
+
+            .mobile-toggle {
+                display: flex;
+            }
+
+            .logo-container img {
+                height: 2.8rem;
+                transform: scale(1.9);
+            }
+
+            .hero {
+                padding: 4rem 1.5rem 3rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.8rem;
+                line-height: 1.2;
+            }
+
+            .section-header h2 {
+                font-size: 2.2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-card {
+                min-width: 300px;
+            }
+
+            .cta-content h2 {
+                font-size: 2.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 1rem 1.5rem;
+                font-size: 0.9rem;
+                min-height: 44px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            nav {
+                height: 60px;
+                gap: 1rem;
+            }
+
+            .logo-container img {
+                height: 2.3rem;
+                transform: scale(1.65);
+            }
+
+            .hero {
+                padding: 3rem 1rem 2rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2.2rem;
+                line-height: 1.15;
+            }
+
+            .hero-content .subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-feature-item {
+                gap: 0.5rem;
+            }
+
+            .hero-feature-item i {
+                font-size: 1.3rem;
+            }
+
+            .hero-feature-item span {
+                font-size: 0.85rem;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .hero-features {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+                justify-content: center;
+            }
+
+            .hero-feature-item {
+                gap: 0.6rem;
+                white-space: nowrap;
+            }
+
+            .hero-feature-item span {
+                font-size: 0.9rem;
+            }
+
+            .hero-plans {
+                padding: 3rem 1rem 2rem;
+            }
+
+            .hero-plans h1 {
+                font-size: 1.8rem;
+                margin-bottom: 1rem;
+            }
+
+            .hero-plans p {
+                font-size: 0.9rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .billing-toggle {
+                font-size: 0.9rem;
+                gap: 0.8rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .plan-card {
+                padding: 2rem 1.2rem;
+                border-radius: 16px;
+            }
+
+            .plan-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .plan-name {
+                font-size: 1.3rem;
+            }
+
+            .plan-description {
+                font-size: 0.85rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .price-amount {
+                font-size: 2.5rem;
+            }
+
+            .price-currency {
+                font-size: 1.3rem;
+            }
+
+            .plan-features li {
+                font-size: 0.85rem;
+                padding: 0.6rem 0;
+            }
+
+            .plan-cta {
+                padding: 0.85rem 1.5rem;
+                font-size: 0.9rem;
+                min-height: 40px;
+            }
+
+            .plans-section {
+                padding: 2rem 1rem 4rem;
+            }
+
+            .comparison-section {
+                padding: 2rem 1rem;
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(74, 144, 226, 0.08);
+            }
+
+            .comparison-table table {
+                min-width: 500px;
+                width: 100%;
+            }
+
+            .comparison-table thead th {
+                padding: 1rem 0.75rem;
+                font-size: 0.85rem;
+                font-weight: 600;
+            }
+
+            .comparison-table thead th:first-child {
+                min-width: 140px;
+            }
+
+            .comparison-table tbody tr {
+                border-bottom: 1px solid var(--bg-light);
+            }
+
+            .comparison-table tbody td {
+                padding: 0.9rem 0.75rem;
+                font-size: 0.85rem;
+            }
+
+            .comparison-table tbody td:first-child {
+                min-width: 140px;
+                font-size: 0.85rem;
+                font-weight: 500;
+            }
+
+            .comparison-table .check-icon,
+            .comparison-table .times-icon {
+                font-size: 1.2rem;
+            }
+
+            .features-grid {
+                gap: 1.5rem;
+            }
+
+            .feature-card {
+                padding: 1.5rem 1rem;
+            }
+
+            .feature-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+
+            .feature-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .feature-card p {
+                font-size: 0.85rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .section-header p {
+                font-size: 0.95rem;
+            }
+
+            .steps-container {
+                gap: 1.5rem;
+            }
+
+            .step-item {
+                padding: 1.5rem 1rem;
+            }
+
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+
+            .step-item h3 {
+                font-size: 1.2rem;
+            }
+
+            .step-item p {
+                font-size: 0.85rem;
+            }
+
+            .phone-chat-section {
+                padding: 2.5rem 1rem;
+            }
+
+            .phone-chat-header {
+                margin-bottom: 4.5rem;
+            }
+
+            .phone-chat-header h2 {
+                font-size: 2.2rem;
+            }
+
+            .phone-chat-header p {
+                font-size: 1rem;
+            }
+
+            .phone-mockup-wrapper {
+                height: auto;
+                gap: 3rem;
+            }
+
+            .phone-device {
+                width: 280px;
+                height: 560px;
+            }
+
+            .chat-card {
+                min-width: 260px;
+                padding: 1rem;
+            }
+
+            .chat-card-header {
+                padding: 0.6rem;
+            }
+
+            .chat-messages {
+                height: 200px;
+            }
+
+            .carousel-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+
+            .cta-content h2 {
+                font-size: 2rem;
+            }
+
+            .cta-content p {
+                font-size: 0.95rem;
+            }
+
+            .cta-content .btn-secondary {
+                padding: 0.9rem 1.5rem;
+                font-size: 0.9rem;
+                min-height: 42px;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                padding: 0.9rem 1.5rem;
+                font-size: 0.9rem;
+                min-height: 42px;
+            }
+
+            .footer-content {
+                gap: 2rem;
+            }
+
+            .footer-logo {
+                font-size: 1.3rem;
+            }
+
+            .footer-links h4 {
+                font-size: 1rem;
+            }
+
+            .footer-links a {
+                font-size: 0.9rem;
+            }
+
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .container {
+                padding: 0 0.75rem;
+            }
+
+            nav {
+                height: 56px;
+                gap: 0.5rem;
+            }
+
+            .logo-container img {
+                height: 2rem;
+                transform: scale(1.5);
+            }
+
+            .hero {
+                padding: 2.5rem 0.75rem 1.5rem;
+                gap: 2rem;
+            }
+
+            .hero-content h1 {
+                font-size: 1.8rem;
+                line-height: 1.1;
+            }
+
+            .hero-content .subtitle {
+                font-size: 0.9rem;
+            }
+
+            .hero-feature-item {
+                gap: 0.4rem;
+            }
+
+            .hero-feature-item i {
+                font-size: 1.1rem;
+            }
+
+            .hero-feature-item span {
+                font-size: 0.8rem;
+            }
+
+            .features-grid {
+                gap: 1rem;
+            }
+
+            .feature-card {
+                padding: 1.25rem 0.75rem;
+                border-radius: 12px;
+            }
+
+            .feature-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.25rem;
+            }
+
+            .feature-card h3 {
+                font-size: 1.1rem;
+            }
+
+            .phone-chat-section {
+                padding: 2rem 0.75rem;
+            }
+
+            .phone-chat-header {
+                margin-bottom: 1.5rem;
+            }
+
+            .phone-chat-header h2 {
+                font-size: 1.8rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .phone-chat-header p {
+                font-size: 0.9rem;
+            }
+
+            .phone-mockup-wrapper {
+                height: auto;
+                gap: 1rem;
+            }
+
+            .phone-device {
+                width: 240px;
+                height: 480px;
+            }
+
+            .feature-card p {
+                font-size: 0.8rem;
+            }
+
+            .hero-features {
+                flex-wrap: wrap;
+                gap: 1rem;
+                justify-content: center;
+            }
+
+            .hero-feature-item {
+                gap: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .hero-feature-item i {
+                font-size: 1rem;
+            }
+
+            .hero-feature-item span {
+                font-size: 0.8rem;
+                white-space: nowrap;
+            }
+
+            .hero-plans {
+                padding: 2.5rem 0.75rem 1.5rem;
+            }
+
+            .hero-plans h1 {
+                font-size: 1.6rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .hero-plans p {
+                font-size: 0.85rem;
+                margin-bottom: 1.2rem;
+            }
+
+            .billing-toggle {
+                font-size: 0.8rem;
+                gap: 0.6rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .toggle-switch {
+                width: 50px;
+                height: 28px;
+            }
+
+            .toggle-slider {
+                width: 24px;
+                height: 24px;
+            }
+
+            .discount-badge {
+                font-size: 0.75rem;
+            }
+
+            .plan-card {
+                padding: 1.5rem 1rem;
+                border-radius: 12px;
+                border: 1.5px solid rgba(74, 144, 226, 0.15);
+            }
+
+            .plan-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+                margin-bottom: 1rem;
+            }
+
+            .plan-name {
+                font-size: 1.1rem;
+                margin-bottom: 0.4rem;
+            }
+
+            .plan-description {
+                font-size: 0.8rem;
+                margin-bottom: 1.2rem;
+                line-height: 1.4;
+            }
+
+            .plan-price {
+                margin-bottom: 1.5rem;
+                padding-bottom: 1.5rem;
+            }
+
+            .price-amount {
+                font-size: 2rem;
+            }
+
+            .price-currency {
+                font-size: 1rem;
+            }
+
+            .price-period {
+                font-size: 0.85rem;
+                margin-top: 0.3rem;
+            }
+
+            .plan-features {
+                margin-bottom: 1.5rem;
+            }
+
+            .plan-features li {
+                font-size: 0.8rem;
+                padding: 0.5rem 0;
+                gap: 0.6rem;
+            }
+
+            .plan-features li i {
+                font-size: 0.95rem;
+            }
+
+            .plan-cta {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+                min-height: 38px;
+                border-radius: 8px;
+                border-width: 1.5px;
+            }
+
+            .plans-section {
+                padding: 2rem 0.75rem 3rem;
+            }
+
+            .comparison-section {
+                padding: 3rem 0.75rem;
+            }
+
+            .comparison-table {
+                font-size: 0.75rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.6rem 0.5rem;
+            }
+
+            .comparison-section {
+                padding: 3rem 0.75rem;
+            }
+
+            .comparison-table {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                border-radius: 12px;
+                box-shadow: 0 2px 15px rgba(74, 144, 226, 0.08);
+            }
+
+            .comparison-table table {
+                min-width: 450px;
+                width: 100%;
+            }
+
+            .comparison-table thead {
+                background: linear-gradient(135deg, var(--primary), var(--accent));
+            }
+
+            .comparison-table thead th {
+                padding: 0.75rem 0.5rem;
+                color: white;
+                font-weight: 600;
+                text-align: left;
+                font-size: 0.8rem;
+            }
+
+            .comparison-table thead th:first-child {
+                min-width: 120px;
+                border-radius: 0;
+            }
+
+            .comparison-table tbody td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.8rem;
+                color: var(--text-dark);
+            }
+
+            .comparison-table tbody td:first-child {
+                min-width: 120px;
+                font-size: 0.8rem;
+                font-weight: 500;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .comparison-table .check-icon,
+            .comparison-table .times-icon {
+                font-size: 1.1rem;
+            }
+
+            .faq-section {
+                padding: 3rem 0.75rem;
+            }
+
+            .faq-item {
+                border-radius: 10px;
+            }
+
+            .faq-question {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .faq-answer-content {
+                font-size: 0.85rem;
+                padding: 0.75rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .section-header p {
+                font-size: 0.9rem;
+            }
+
+            .steps-container {
+                gap: 1rem;
+            }
+
+            .step-item {
+                padding: 1.25rem 0.75rem;
+            }
+
+            .step-number {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1rem;
+            }
+
+            .step-item h3 {
+                font-size: 1rem;
+            }
+
+            .step-item p {
+                font-size: 0.8rem;
+            }
+
+            .phone-mockup-wrapper {
+                height: auto;
+            }
+
+            .phone-device {
+                width: 240px;
+                height: 480px;
+            }
+
+            .phone-notch {
+                width: 100px;
+            }
+
+            .phone-features h3 {
+                font-size: 1.1rem;
+            }
+
+            .feature-item {
+                padding: 0.75rem;
+            }
+
+            .feature-content h4 {
+                font-size: 0.95rem;
+            }
+
+            .feature-content p {
+                font-size: 0.8rem;
+            }
+
+            .chat-card {
+                min-width: 220px;
+                padding: 0.75rem;
+            }
+
+            .chat-card-header {
+                padding: 0.5rem;
+                gap: 0.5rem;
+            }
+
+            .chat-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+
+            .chat-info h4 {
+                font-size: 0.8rem;
+                margin-bottom: 0.05rem;
+            }
+
+            .chat-info p {
+                font-size: 0.7rem;
+            }
+
+            .chat-messages {
+                height: 150px;
+                padding: 0.8rem 0.7rem;
+            }
+
+            .chat-message {
+                margin-bottom: 0.6rem;
+                padding: 0.6rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            .carousel-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+
+            .cta-content h2 {
+                font-size: 1.6rem;
+            }
+
+            .cta-content p {
+                font-size: 0.9rem;
+            }
+
+            .cta-content .btn-secondary {
+                padding: 0.8rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            .footer-logo {
+                font-size: 1.1rem;
+            }
+
+            .footer-links h4 {
+                font-size: 0.95rem;
+            }
+
+            .footer-links a {
+                font-size: 0.85rem;
+            }
+
+            .footer-bottom {
+                font-size: 0.75rem;
+                padding: 1rem 0;
+            }
+
+            .whatsapp-float {
+                width: 46px;
+                height: 46px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Wave Background -->
+    <div class="wave-bg">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path fill="#EFF6FB" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,181.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
+        </svg>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="/" class="logo-container">
+                    <img src="logo_medbot_azul.png" alt="MedBot">
+                </a>
+                <div class="mobile-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#" data-tab="tab-home">Inicio</a></li>
+                    <li><a href="#features">Funciones</a></li>
+                    <li><a href="#how-it-works">Cómo Funciona</a></li>
+                    <li><a href="#examples">Ejemplos</a></li>
+                    <li><a href="#" data-tab="tab-planes">Planes</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a href="https://wa.me/56990819179" class="btn-primary">Solicitar Demo</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- HOME TAB CONTENT -->
+        <div class="tab-content active" id="tab-home">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Agenda médica inteligente que trabaja 24/7</h1>
+                <p class="subtitle">Automatiza agendamiento de citas, fichas clínicas y atención al paciente con IA. Responde consultas, confirma citas y gestiona tu agenda mientras tú te enfocas en lo importante.</p>
+                
+                <div class="hero-cta">
+                    <a href="#examples" class="btn-primary">Ver en Acción</a>
+                    <a href="#features" class="btn-secondary">Conocer Más</a>
+                </div>
+
+                <div class="hero-features">
+                    <div class="hero-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Disponible 24/7</span>
+                    </div>
+                    <div class="hero-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Integración WhatsApp</span>
+                    </div>
+                    <div class="hero-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Fichas Automáticas</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="dashboard-card">
+                    <div class="float-icon float-icon-1">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="float-icon float-icon-2">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+
+                    <div class="dashboard-header">
+                        <h3 class="dashboard-title">Agenda de Hoy</h3>
+                        <span class="status-badge"><i class="fas fa-circle"></i> En Línea</span>
+                    </div>
+
+                    <div class="appointment-list">
+                        <div class="appointment-item">
+                            <div class="appointment-time">10:00</div>
+                            <div class="appointment-info">
+                                <h4>Dra. María González</h4>
+                                <p>Control General - Juan Pérez</p>
+                            </div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-time">11:30</div>
+                            <div class="appointment-info">
+                                <h4>Dr. Carlos Ruiz</h4>
+                                <p>Consulta Pediátrica - Ana Silva</p>
+                            </div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-time">15:00</div>
+                            <div class="appointment-info">
+                                <h4>Dra. Patricia López</h4>
+                                <p>Seguimiento - Roberto Díaz</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Mobile Phone Chat Interface -->
+        <section class="phone-chat-section">
+            <div class="phone-chat-container">
+                <div class="phone-chat-header">
+                    <h2>Conversaciones Naturales en WhatsApp</h2>
+                    <p>Tus pacientes interactúan con MedBot como si hablaran con una persona real</p>
+                </div>
+
+                <div class="phone-mockup-wrapper">
+                    <!-- Phone Device -->
+                    <div class="phone-device">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <!-- Chat Interface -->
+                            <div class="chat-header">
+                                <div class="chat-header-avatar">M</div>
+                                <div class="chat-header-info">
+                                    <h3>Centro Médico Bot</h3>
+                                    <p>en línea</p>
+                                </div>
+                            </div>
+
+                            <div class="chat-content">
+                                <div class="chat-timestamp">Hoy, 14:32</div>
+                                
+                                <div class="chat-bubble bot">
+                                    ¡Hola! 👋 Soy el asistente del Centro Médico. ¿En qué puedo ayudarte hoy?
+                                </div>
+                                
+                                <div class="chat-bubble user">
+                                    Hola, necesito agendar una hora con el cardiólogo
+                                </div>
+                                
+                                <div class="chat-bubble bot">
+                                    Perfecto! Te ayudo con eso. Tenemos disponibilidad con el Dr. Ramírez esta semana. ¿Prefieres horario de mañana o tarde?
+                                </div>
+                                
+                                <div class="chat-bubble user">
+                                    Mañana si es posible
+                                </div>
+                                
+                                <div class="chat-bubble bot">
+                                    Excelente! Tengo estos horarios disponibles:<br><br>
+                                    📅 Martes 10:00 AM<br>
+                                    📅 Miércoles 11:30 AM<br>
+                                    📅 Jueves 9:00 AM<br><br>
+                                    ¿Cuál te acomoda mejor?
+                                </div>
+                                
+                                <div class="chat-bubble user">
+                                    El martes a las 10
+                                </div>
+                                
+                                <div class="chat-bubble bot">
+                                    Perfecto! Para confirmar tu cita del Martes a las 10:00 AM necesito:<br><br>
+                                    • Tu nombre completo<br>
+                                    • Tu RUT<br><br>
+                                    ¿Me los puedes proporcionar?
+                                </div>
+
+                                <div class="typing-indicator">
+                                    <div class="typing-dot"></div>
+                                    <div class="typing-dot"></div>
+                                    <div class="typing-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features List -->
+                    <div class="phone-features">
+                        <h3>Atención Inteligente para tus Pacientes</h3>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Agendamiento Automático</h4>
+                                <p>MedBot gestiona las citas en tiempo real, verifica disponibilidad y confirma automáticamente.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Respuestas Inteligentes</h4>
+                                <p>Entiende contexto y responde preguntas complejas sobre procedimientos, valores y requisitos.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Recordatorios Automáticos</h4>
+                                <p>Envía confirmaciones y recordatorios para reducir las inasistencias hasta en un 70%.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4>Reagendamiento Fácil</h4>
+                                <p>Los pacientes pueden cancelar o cambiar sus citas sin necesidad de llamar.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Features Section -->
+        <section id="features" class="features-section">
+            <div class="section-header">
+                <span class="section-tag">Funciones Principales</span>
+                <h2>Todo lo que necesitas para tu práctica médica</h2>
+                <p>Optimiza cada aspecto de la atención al paciente con inteligencia artificial</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Agendamiento Automático</h3>
+                    <p>El paciente agenda su cita directamente por WhatsApp. El sistema verifica disponibilidad en tiempo real y confirma automáticamente.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h3>Fichas Clínicas Digitales</h3>
+                    <p>Recopila información del paciente automáticamente durante la conversación y crea fichas clínicas estructuradas.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Recordatorios Inteligentes</h3>
+                    <p>Envía confirmaciones y recordatorios de citas automáticamente. Reduce las inasistencias hasta en un 70%.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Respuestas 24/7</h3>
+                    <p>Atiende consultas frecuentes a cualquier hora. El bot responde dudas sobre horarios, especialidades y procedimientos.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>Reagendamiento Fácil</h3>
+                    <p>Permite a los pacientes cancelar o reagendar citas de forma autónoma, manteniendo tu agenda siempre actualizada.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Reportes y Métricas</h3>
+                    <p>Visualiza estadísticas de atención, tasa de ocupación y satisfacción del paciente en tiempo real.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it Works -->
+        <section id="how-it-works" class="how-it-works">
+            <div class="section-header">
+                <span class="section-tag">Proceso Simple</span>
+                <h2>Cómo funciona MedBot</h2>
+                <p>Tres pasos para automatizar tu agenda médica</p>
+            </div>
+
+            <div class="steps-container">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h3>Configuración Rápida</h3>
+                    <p>Conecta tu WhatsApp Business, configura tus horarios disponibles y especialidades en minutos.</p>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h3>El Paciente Contacta</h3>
+                    <p>El paciente escribe por WhatsApp y MedBot le atiende instantáneamente, 24 horas al día.</p>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h3>Cita Confirmada</h3>
+                    <p>MedBot agenda la cita, envía confirmación al paciente y actualiza tu calendario automáticamente.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Examples -->
+        <section id="examples" class="chat-examples">
+            <div class="section-header">
+                <span class="section-tag">Ejemplos Reales</span>
+                <h2>Mira MedBot en acción</h2>
+                <p>Conversaciones reales de agendamiento y atención al paciente</p>
+            </div>
+
+            <div class="chat-carousel-wrapper">
+                <div class="chat-carousel" id="chatCarousel">
+                    <!-- Example 1 -->
+                    <div class="chat-card">
+                        <div class="chat-card-header">
+                            <div class="chat-avatar">C</div>
+                            <div class="chat-info">
+                                <h4>Clínica Salud - Bot</h4>
+                                <p>en línea</p>
+                            </div>
+                        </div>
+                        <div class="chat-messages">
+                            <div class="chat-message chat-message-user">Hola, necesito agendar una consulta</div>
+                            <div class="chat-message chat-message-bot">¡Hola! Claro, te ayudo con tu cita 😊 ¿Con qué especialidad necesitas atención?</div>
+                            <div class="chat-message chat-message-user">Medicina general</div>
+                            <div class="chat-message chat-message-bot">Perfecto. Tenemos disponibilidad esta semana. ¿Prefieres horario de mañana o tarde?</div>
+                            <div class="chat-message chat-message-user">Mañana si es posible</div>
+                            <div class="chat-message chat-message-bot">Tengo estos horarios: Martes 10:00 AM, Miércoles 11:30 AM, Jueves 9:00 AM. ¿Cuál te acomoda?</div>
+                            <div class="chat-message chat-message-user">El martes a las 10</div>
+                            <div class="chat-message chat-message-bot">Excelente! Para confirmar necesito tu nombre completo y RUT por favor</div>
+                        </div>
+                    </div>
+
+                    <!-- Example 2 -->
+                    <div class="chat-card">
+                        <div class="chat-card-header">
+                            <div class="chat-avatar">P</div>
+                            <div class="chat-info">
+                                <h4>Policlínico Norte - Bot</h4>
+                                <p>en línea</p>
+                            </div>
+                        </div>
+                        <div class="chat-messages">
+                            <div class="chat-message chat-message-user">Hola, tengo una cita mañana pero no podré asistir</div>
+                            <div class="chat-message chat-message-bot">Entiendo. ¿Me confirmas tu RUT para buscar tu reserva?</div>
+                            <div class="chat-message chat-message-user">12.345.678-9</div>
+                            <div class="chat-message chat-message-bot">Perfecto María, encontré tu cita: Mañana 15:00 con Dr. González. ¿Deseas reagendar o cancelar?</div>
+                            <div class="chat-message chat-message-user">Reagendar para la próxima semana</div>
+                            <div class="chat-message chat-message-bot">Claro! Tengo disponible: Lunes 14:00, Miércoles 16:00, Viernes 10:30. ¿Cuál prefieres?</div>
+                            <div class="chat-message chat-message-user">El miércoles a las 16:00</div>
+                            <div class="chat-message chat-message-bot">✅ Listo María! Tu cita ha sido reagendada para el Miércoles 18:00. Te enviaré un recordatorio un día antes.</div>
+                        </div>
+                    </div>
+
+                    <!-- Example 3 -->
+                    <div class="chat-card">
+                        <div class="chat-card-header">
+                            <div class="chat-avatar">M</div>
+                            <div class="chat-info">
+                                <h4>MediCentro - Bot</h4>
+                                <p>en línea</p>
+                            </div>
+                        </div>
+                        <div class="chat-messages">
+                            <div class="chat-message chat-message-user">Buenos días, consulta por el valor de una ecografía</div>
+                            <div class="chat-message chat-message-bot">¡Buenos días! 😊 El valor de la ecografía depende del tipo. Tenemos:
+- Ecografía Abdominal: $25,000
+- Ecografía Mamaria: $28,000
+- Eco Obstétrica: $30,000</div>
+                            <div class="chat-message chat-message-user">La obstétrica. ¿Tienen hora disponible?</div>
+                            <div class="chat-message chat-message-bot">Sí! Tenemos disponibilidad esta semana. ¿Qué día te acomoda mejor?</div>
+                            <div class="chat-message chat-message-user">El jueves si hay</div>
+                            <div class="chat-message chat-message-bot">Perfecto. Jueves tengo: 09:00, 11:30, 15:00. ¿Cuál horario prefieres?</div>
+                            <div class="chat-message chat-message-user">Las 11:30</div>
+                            <div class="chat-message chat-message-bot">Excelente! Necesito tus datos: Nombre completo y RUT para la reserva 📋</div>
+                        </div>
+                    </div>
+
+                    <!-- Example 4 -->
+                    <div class="chat-card">
+                        <div class="chat-card-header">
+                            <div class="chat-avatar">D</div>
+                            <div class="chat-info">
+                                <h4>Dr. Ramírez - Bot</h4>
+                                <p>en línea</p>
+                            </div>
+                        </div>
+                        <div class="chat-messages">
+                            <div class="chat-message chat-message-user">Hola, es primera vez que vendría. ¿Qué necesito?</div>
+                            <div class="chat-message chat-message-bot">¡Bienvenido! 😊 Para tu primera consulta necesitas:
+- Carnet de identidad
+- Exámenes previos (si tienes)
+- Llegar 10 min antes
+
+¿Ya tienes hora agendada?</div>
+                            <div class="chat-message chat-message-user">No, necesito agendar</div>
+                            <div class="chat-message chat-message-bot">Perfecto, te ayudo. Atendemos de Lunes a Viernes 9:00-18:00. ¿Qué día te acomoda?</div>
+                            <div class="chat-message chat-message-user">¿Tienen para el lunes?</div>
+                            <div class="chat-message chat-message-bot">Sí! El lunes tengo: 10:00, 14:30, 17:00. ¿Cuál horario prefieres?</div>
+                            <div class="chat-message chat-message-user">14:30 está bien</div>
+                            <div class="chat-message chat-message-bot">Perfecto! Dame tu nombre y RUT para confirmar tu cita del Lunes 14:30 📅</div>
+                        </div>
+                    </div>
+
+                    <!-- Example 5 -->
+                    <div class="chat-card">
+                        <div class="chat-card-header">
+                            <div class="chat-avatar">S</div>
+                            <div class="chat-info">
+                                <h4>Salud Total - Bot</h4>
+                                <p>en línea</p>
+                            </div>
+                        </div>
+                        <div class="chat-messages">
+                            <div class="chat-message chat-message-user">Hola, ¿atienden urgencias?</div>
+                            <div class="chat-message chat-message-bot">Hola! Atendemos urgencias de 8:00 a 22:00 todos los días. ¿Es una emergencia o puedo ayudarte con algo más?</div>
+                            <div class="chat-message chat-message-user">No es emergencia, pero necesito ver a un doctor hoy</div>
+                            <div class="chat-message chat-message-bot">Entiendo. Tenemos atención de urgencia disponible. Actualmente el tiempo de espera es de aprox. 30 minutos. ¿Qué síntomas presentas?</div>
+                            <div class="chat-message chat-message-user">Fiebre y dolor de garganta desde ayer</div>
+                            <div class="chat-message chat-message-bot">Ok. Te recomiendo venir a urgencias. Por favor trae tu carnet y mascarilla. Dame tu nombre para registrarte en el sistema 🏥</div>
+                            <div class="chat-message chat-message-user">Pedro Soto</div>
+                            <div class="chat-message chat-message-bot">Perfecto Pedro! Ya estás registrado. Te esperamos en Urgencias. La dirección es Av. Principal 123. ¡Que te mejores pronto!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-controls">
+                    <button class="carousel-btn" id="prevChat"><i class="fas fa-chevron-left"></i></button>
+                    <button class="carousel-btn" id="nextChat"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PLANES TAB CONTENT -->
+        </div>
+        <div class="tab-content" id="tab-planes">
+        <!-- Hero Plans Section -->
+        <section id="planes" class="hero-plans">
+            <h1>Planes diseñados para tu práctica médica</h1>
+            <p>Desde consultas privadas hasta grandes clínicas. Automatiza tu agenda médica con tecnología de vanguardia.</p>
+            
+            <div class="billing-toggle">
+                <span>Mensual</span>
+                <div class="toggle-switch" id="billingToggle">
+                    <div class="toggle-slider"></div>
+                </div>
+                <span>Anual</span>
+                <span class="discount-badge" style="color: #F8FBFD;">Ahorra 20%</span>
+            </div>
+        </section>
+
+        <!-- Plans Section -->
+        <section class="plans-section">
+            <div class="plans-grid">
+                <!-- Consultorio Plan -->
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <div class="plan-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h3 class="plan-name">Consultorio</h3>
+                        <p class="plan-description">Perfecto para médicos independientes y consultas privadas</p>
+                    </div>
+
+                    <div class="plan-price">
+                        <div class="price-amount">
+                            <span class="price-currency">$</span><span class="monthly-price">49.990</span><span class="annual-price" style="display: none;">39.990</span>
+                        </div>
+                        <p class="price-period">CLP / mes</p>
+                        <p class="price-note annual-note" style="display: none;">Facturado anualmente</p>
+                    </div>
+
+                    <div class="plan-features">
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Hasta 500 pacientes/mes</li>
+                            <li><i class="fas fa-check-circle"></i> 1 agenda médica</li>
+                            <li><i class="fas fa-check-circle"></i> Agendamiento automático 24/7</li>
+                            <li><i class="fas fa-check-circle"></i> Recordatorios automáticos</li>
+                            <li><i class="fas fa-check-circle"></i> Fichas clínicas digitales</li>
+                            <li><i class="fas fa-check-circle"></i> Dashboard básico</li>
+                            <li class="disabled"><i class="fas fa-times-circle"></i> Múltiples especialidades</li>
+                            <li class="disabled"><i class="fas fa-times-circle"></i> Integración con HIS/ERP</li>
+                        </ul>
+                    </div>
+
+                    <a href="https://wa.me/56990819179?text=Hola!%20Estoy%20interesado%20en%20el%20plan%20Consultorio" class="plan-cta">
+                        Comenzar Ahora
+                    </a>
+                </div>
+
+                <!-- Clínica Plan (Featured) -->
+                <div class="plan-card featured">
+                    <div class="popular-badge">
+                        <i class="fas fa-star"></i> Más Popular
+                    </div>
+                    
+                    <div class="plan-header">
+                        <div class="plan-icon">
+                            <i class="fas fa-hospital"></i>
+                        </div>
+                        <h3 class="plan-name">Clínica</h3>
+                        <p class="plan-description">Ideal para clínicas y centros médicos en crecimiento</p>
+                    </div>
+
+                    <div class="plan-price">
+                        <div class="price-amount">
+                            <span class="price-currency">$</span><span class="monthly-price">99.990</span><span class="annual-price" style="display: none;">79.990</span>
+                        </div>
+                        <p class="price-period">CLP / mes</p>
+                        <p class="price-note annual-note" style="display: none;">Facturado anualmente</p>
+                    </div>
+
+                    <div class="plan-features">
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Hasta 2,000 pacientes/mes</li>
+                            <li><i class="fas fa-check-circle"></i> Hasta 5 agendas médicas</li>
+                            <li><i class="fas fa-check-circle"></i> Agendamiento automático 24/7</li>
+                            <li><i class="fas fa-check-circle"></i> Recordatorios y confirmaciones</li>
+                            <li><i class="fas fa-check-circle"></i> Fichas clínicas completas</li>
+                            <li><i class="fas fa-check-circle"></i> Dashboard avanzado + Analytics</li>
+                            <li><i class="fas fa-check-circle"></i> Múltiples especialidades</li>
+                            <li><i class="fas fa-check-circle"></i> Integración básica con sistemas</li>
+                        </ul>
+                    </div>
+
+                    <a href="https://wa.me/56990819179?text=Hola!%20Estoy%20interesado%20en%20el%20plan%20Clínica" class="plan-cta">
+                        Comenzar Ahora
+                    </a>
+                </div>
+
+                <!-- Hospital Plan -->
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <div class="plan-icon">
+                            <i class="fas fa-hospital-alt"></i>
+                        </div>
+                        <h3 class="plan-name">Hospital</h3>
+                        <p class="plan-description">Solución completa para hospitales y grandes instituciones</p>
+                    </div>
+
+                    <div class="plan-price">
+                        <div class="price-amount" style="font-size: 2.8rem;">
+                            Personalizado
+                        </div>
+                        <p class="price-period">Cotización a medida</p>
+                    </div>
+
+                    <div class="plan-features">
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Pacientes ilimitados</li>
+                            <li><i class="fas fa-check-circle"></i> Agendas ilimitadas</li>
+                            <li><i class="fas fa-check-circle"></i> IA personalizada por especialidad</li>
+                            <li><i class="fas fa-check-circle"></i> Sistema completo de notificaciones</li>
+                            <li><i class="fas fa-check-circle"></i> Fichas clínicas personalizadas</li>
+                            <li><i class="fas fa-check-circle"></i> Dashboard institucional completo</li>
+                            <li><i class="fas fa-check-circle"></i> Todas las especialidades</li>
+                            <li><i class="fas fa-check-circle"></i> Integración completa HIS/ERP</li>
+                        </ul>
+                    </div>
+
+                    <a href="https://wa.me/56990819179?text=Hola!%20Necesito%20información%20sobre%20el%20plan%20Hospital" class="plan-cta">
+                        Contactar Ventas
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Section -->
+        <section class="comparison-section">
+            <div class="section-header">
+                <h2>Comparación detallada de planes</h2>
+                <p>Encuentra las características específicas que tu centro médico necesita</p>
+            </div>
+
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th>Consultorio</th>
+                            <th>Clínica</th>
+                            <th>Hospital</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Pacientes mensuales</td>
+                            <td>500</td>
+                            <td>2,000</td>
+                            <td>Ilimitados</td>
+                        </tr>
+                        <tr>
+                            <td>Agendas médicas</td>
+                            <td>1</td>
+                            <td>5</td>
+                            <td>Ilimitadas</td>
+                        </tr>
+                        <tr>
+                            <td>Especialidades</td>
+                            <td>1</td>
+                            <td>Múltiples</td>
+                            <td>Todas</td>
+                        </tr>
+                        <tr>
+                            <td>Agendamiento 24/7</td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Fichas clínicas digitales</td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Analytics avanzado</td>
+                            <td><i class="fas fa-times-circle times-icon"></i></td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Integración con sistemas</td>
+                            <td><i class="fas fa-times-circle times-icon"></i></td>
+                            <td>Básica</td>
+                            <td>Completa</td>
+                        </tr>
+                        <tr>
+                            <td>IA personalizada</td>
+                            <td><i class="fas fa-times-circle times-icon"></i></td>
+                            <td><i class="fas fa-times-circle times-icon"></i></td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Soporte prioritario</td>
+                            <td><i class="fas fa-times-circle times-icon"></i></td>
+                            <td><i class="fas fa-times-circle times-icon"></i></td>
+                            <td><i class="fas fa-check-circle check-icon"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="section-header">
+                <h2>Preguntas Frecuentes</h2>
+                <p>Todo lo que necesitas saber sobre MedBot</p>
+            </div>
+
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Cómo funciona el agendamiento automático?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            MedBot se integra con tu calendario y permite que los pacientes agenden citas directamente por WhatsApp. El sistema verifica disponibilidad en tiempo real y confirma automáticamente las citas sin intervención humana.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Puedo cambiar de plan en cualquier momento?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Sí, puedes actualizar o cambiar tu plan cuando lo necesites. Los cambios se aplican inmediatamente y ajustamos la facturación de manera proporcional.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Las fichas clínicas cumplen con normativas de salud?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Sí, nuestro sistema cumple con las normativas chilenas de protección de datos de salud (Ley 20.584) y garantiza la confidencialidad de la información médica.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Qué sucede si supero mi límite de pacientes?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Te notificamos cuando te acerques a tu límite. Puedes actualizar tu plan o adquirir capacidad adicional según tus necesidades sin interrupción del servicio.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Incluye capacitación para mi equipo médico?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Todos los planes incluyen acceso a tutoriales y documentación. Los planes Clínica y Hospital incluyen sesiones de capacitación personalizadas para tu equipo médico y administrativo.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>¿Puedo integrar MedBot con mi sistema actual?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            Sí, MedBot puede integrarse con los principales sistemas HIS y ERP del mercado. El nivel de integración depende del plan elegido. Contáctanos para evaluar tu caso específico.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- END PLANES TAB -->
+        </div>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <div class="cta-content">
+                <h2>¿Listo para automatizar tu agenda médica?</h2>
+                <p>Únete a los profesionales de la salud que ya están optimizando su tiempo con MedBot. Solicita una demo gratuita y descubre cómo funciona.</p>
+                <a href="https://wa.me/56990819179" class="btn-secondary">Solicitar Demo Gratuita</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <div class="footer-logo">MedBot<span>.cl</span></div>
+                    <p>Desarrollado por NolanAI Software Limitada. Potenciando empresas con tecnología de vanguardia.</p>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Productos</h4>
+                    <ul>
+                        <li><a href="https://fastbot.cl">Fastbot CRM</a></li>
+                        <li><a href="https://medbot.cl">Medbot</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Empresa</h4>
+                    <ul>
+                        <li><a href="https://nolanai.cl">NolanAI.cl</a></li>
+                        <li><a href="https://www.instagram.com/nolanai.cl/">Instagram</a></li>
+                        <li><a href="https://web.facebook.com/profile.php?id=61581646036842">Facebook</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links" id="contact">
+                    <h4>Contacto</h4>
+                    <ul>
+                        <li><a href="mailto:equipo@nolanai.cl"><i class="fas fa-envelope"></i> equipo@nolanai.cl</a></li>
+                        <li><a href="https://wa.me/56990819179"><i class="fab fa-whatsapp"></i> +56 9 9081 9179</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                &copy; 2026 NolanAI Software Limitada. Chile.
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/56990819179" class="whatsapp-float" aria-label="Contactar por WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <script>
+        // Mobile menu toggle
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+        const navActions = document.querySelector('.nav-actions');
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                mobileToggle.classList.toggle('active');
+                navMenu.classList.toggle('mobile-active');
+                navActions.classList.toggle('mobile-active');
+            });
+
+            // Close menu when clicking on a link
+            document.querySelectorAll('.nav-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileToggle.classList.remove('active');
+                    navMenu.classList.remove('mobile-active');
+                    navActions.classList.remove('mobile-active');
+                });
+            });
+        }
+
+        // Chat Carousel
+        const carousel = document.getElementById('chatCarousel');
+        const prevBtn = document.getElementById('prevChat');
+        const nextBtn = document.getElementById('nextChat');
+
+        const scrollAmount = () => {
+            const card = carousel.querySelector('.chat-card');
+            return card ? card.offsetWidth + 32 : 392;
+        };
+
+        prevBtn.addEventListener('click', () => {
+            carousel.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+        });
+
+        nextBtn.addEventListener('click', () => {
+            carousel.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+        });
+
+        // Billing toggle functionality
+        const billingToggle = document.getElementById('billingToggle');
+        const monthlyPrices = document.querySelectorAll('.monthly-price');
+        const annualPrices = document.querySelectorAll('.annual-price');
+        const annualNotes = document.querySelectorAll('.annual-note');
+
+        billingToggle.addEventListener('click', () => {
+            billingToggle.classList.toggle('active');
+            
+            monthlyPrices.forEach(price => {
+                price.style.display = price.style.display === 'none' ? 'inline' : 'none';
+            });
+            
+            annualPrices.forEach(price => {
+                price.style.display = price.style.display === 'none' ? 'inline' : 'none';
+            });
+            
+            annualNotes.forEach(note => {
+                note.style.display = note.style.display === 'none' ? 'block' : 'none';
+            });
+        });
+
+        // FAQ accordion functionality
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                faqItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                item.classList.toggle('active');
+            });
+        });
+
+        // Smooth scroll for anchor links
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                
+                // Si no tiene data-tab, necesita cambiar a tab-home primero
+                if (!this.dataset.tab && href !== '#') {
+                    // Activar tab-home
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById('tab-home').classList.add('active');
+                }
+                
+                const target = document.querySelector(href);
+                if (target) {
+                    // Pequeno delay para asegurar que el tab está visible
+                    setTimeout(() => {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                }
+            });
+        });
+
+        // Tab switching functionality from navbar
+        const tabLinks = document.querySelectorAll('[data-tab]');
+
+        tabLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tabId = link.dataset.tab;
+
+                // Remove active class from all contents
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to corresponding content
+                const targetTab = document.getElementById(tabId);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                    // Scroll to top of the tab content
+                    targetTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+
+                // Close mobile menu if open
+                mobileToggle.classList.remove('active');
+                navMenu.classList.remove('mobile-active');
+                navActions.classList.remove('mobile-active');
+            });
+        });
+    </script>
+
+</body>
+</html>

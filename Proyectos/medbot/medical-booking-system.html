@@ -1,0 +1,3031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Citas Médicas | Sistema de Agendamiento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --primary-light: #EFF6FB;
+            --accent: #52C1E0;
+            --text-dark: #1E3A5F;
+            --white: #FFFFFF;
+            --success: #4ECDC4;
+            --error: #EF4444;
+            --warning: #FFB84D;
+            --gray-50: #F8FBFD;
+            --gray-100: #EFF6FB;
+            --gray-200: #E0EBF5;
+            --gray-300: #C5D6E8;
+            --gray-400: #9BB0C9;
+            --gray-500: #5A6C7D;
+            --gray-600: #4B5C6D;
+            --gray-700: #1E3A5F;
+            --gray-800: #1E3A5F;
+            --gray-900: #0F1E2F;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--gray-50);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Timer Container */
+        .timer-container {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1100;
+            box-shadow: 0 2px 15px rgba(74, 144, 226, 0.2);
+        }
+
+        .timer-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0 2rem;
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .timer-content i {
+            font-size: 1.1rem;
+            animation: clockTick 1s infinite;
+        }
+
+        @keyframes clockTick {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .timer-label {
+            font-size: 0.95rem;
+        }
+
+        .timer-display {
+            font-size: 1.3rem;
+            font-weight: 800;
+            font-family: 'Courier New', monospace;
+            min-width: 70px;
+            text-align: center;
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .timer-container.warning .timer-display {
+            background: rgba(255, 179, 71, 0.3);
+            border-color: rgba(255, 179, 71, 0.6);
+            animation: pulse 1s infinite;
+        }
+
+        .timer-container.expired {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Progress Timeline */
+        .progress-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(74, 144, 226, 0.1);
+            padding: 2rem 0;
+            position: relative;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(74, 144, 226, 0.08);
+        }
+
+        .progress-timeline {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .progress-timeline::before {
+            content: '';
+            position: absolute;
+            top: 35%;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: var(--gray-200);
+            z-index: 0;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            gap: 0.5rem;
+        }
+
+        .progress-step-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 3px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--gray-400);
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .progress-step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.15);
+            transform: scale(1.1);
+        }
+
+        .progress-step.completed .progress-step-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--white);
+        }
+
+        .progress-step-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-align: center;
+            max-width: 140px;
+        }
+
+        .progress-step.active .progress-step-label {
+            color: var(--primary);
+        }
+
+        .progress-step.completed .progress-step-label {
+            color: var(--primary-dark);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Step Content */
+        .step-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Step 1: Calendar View */
+        .calendar-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 2rem;
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 35px rgba(74, 144, 226, 0.15);
+            border: 1px solid rgba(74, 144, 226, 0.1);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .calendar-sidebar {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-light) 100%);
+            padding: 1.5rem;
+            border-right: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        .specialty-select {
+            margin-bottom: 1.5rem;
+        }
+
+        .specialty-select label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--gray-600);
+            background: var(--white);
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.2s;
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--primary);
+            font-size: 0.75rem;
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+        }
+
+        .btn-search {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-search i {
+            font-size: 0.85rem;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-search:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-search:disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-back {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back i {
+            font-size: 0.8rem;
+        }
+
+        .btn-back:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-back-top {
+            width: auto;
+            padding: 0.75rem 1.5rem;
+            background: var(--gray-200);
+            color: var(--gray-700);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-back-top i {
+            font-size: 0.8rem;
+        }
+
+        .btn-back-top:hover {
+            background: var(--gray-300);
+        }
+
+        .calendar-main {
+            padding: 2rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .calendar-header > div:first-child {
+            text-align: center;
+        }
+
+        .calendar-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .calendar-header .year {
+            display: block;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            margin-top: 0.15rem;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 0.75rem;
+            position: absolute;
+            right: 0;
+        }
+
+        .calendar-nav button {
+            width: 44px;
+            height: 44px;
+            border: 2px solid var(--primary);
+            background: var(--white);
+            color: var(--primary);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .calendar-nav button:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            padding: 0.5rem;
+            background: var(--gray-50);
+            border-radius: 6px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: not-allowed;
+            transition: all 0.2s;
+            background: var(--gray-100);
+            color: var(--gray-400);
+            border: 2px solid transparent;
+        }
+
+        .calendar-day.available {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            cursor: pointer;
+            border-color: var(--primary);
+        }
+
+        .calendar-day.available:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .calendar-day.selected {
+            background: var(--primary-dark);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2), 0 4px 15px rgba(74, 144, 226, 0.3);
+            transform: scale(1.1);
+        }
+
+        .calendar-day.today {
+            position: relative;
+        }
+
+        .calendar-day.today::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #30c280;
+        }
+
+        /* Step 2: Professionals List */
+        .professionals-container-full {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 35px rgba(74, 144, 226, 0.15);
+            border: 1px solid rgba(74, 144, 226, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .professionals-sidebar {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-light) 100%);
+            padding: 1.5rem;
+            border-right: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        .professionals-content {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .professionals-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .professionals-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .professionals-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .professionals-header p {
+            font-size: 1.125rem;
+            color: var(--gray-600);
+        }
+
+        .professionals-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .professional-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 25px rgba(74, 144, 226, 0.12);
+            transition: all 0.3s ease;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 2rem;
+            align-items: start;
+            border: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        .professional-card:hover {
+            box-shadow: 0 8px 35px rgba(74, 144, 226, 0.2);
+            transform: translateY(-4px);
+            border-color: rgba(74, 144, 226, 0.2);
+        }
+
+        .professional-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            background: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .professional-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .professional-photo-placeholder {
+            font-size: 2.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .professional-photo-placeholder i {
+            font-size: 2.5rem;
+        }
+
+        .professional-info {
+            flex: 1;
+        }
+
+        .professional-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .professional-specialty {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+
+        .professional-agreements {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .agreement-badge {
+            padding: 0.375rem 0.875rem;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .professional-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-width: 200px;
+        }
+
+        .next-available {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--primary-light);
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+        }
+
+        .next-available-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .next-available-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+            color: var(--gray-400);
+            font-weight: 500;
+        }
+
+        .next-available-info strong {
+            color: var(--gray-500);
+            font-weight: 400;
+            font-size: 1.1rem;
+        }
+
+        .btn-reserve-quick {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-reserve-quick:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-view-more {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--white);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view-more:hover {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Step 3: Time Slots Selection */
+        .timeslots-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 4px 25px rgba(74, 144, 226, 0.12);
+            border: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        .timeslots-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr 280px;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .timeslots-professional-card {
+            padding: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .timeslots-professional-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .timeslots-professional-card .professional-photo {
+            width: 96px;
+            height: 96px;
+            margin: 0 auto;
+        }
+
+        .timeslots-professional-card .professional-info {
+            text-align: center;
+        }
+
+        .timeslots-professional-card .professional-agreements {
+            justify-content: center;
+        }
+
+        .timeslots-sidebar .btn-back {
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .timeslots-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .timeslots-header .selected-date {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            background: var(--primary);
+            color: var(--white);
+            border-radius: 16px;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeslots-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .timeslots-header .clinic-name {
+            font-size: 1.125rem;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .mini-calendar {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.08);
+        }
+
+        .mini-calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+        }
+
+        .mini-calendar-month {
+            flex: 1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            align-items: center;
+        }
+
+        .mini-calendar-year {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        .mini-calendar-nav {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--primary);
+            background: var(--white);
+            color: var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+
+        .mini-calendar-nav:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .mini-calendar-nav:disabled {
+            visibility: hidden;
+        }
+
+        .mini-calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            text-align: center;
+        }
+
+        .mini-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.35rem;
+        }
+
+        .mini-calendar-day {
+            height: 28px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            background: var(--gray-50);
+            position: relative;
+        }
+
+        .mini-calendar-day.selectable {
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .mini-calendar-day.selectable:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+        }
+
+        .mini-calendar-day.empty {
+            background: transparent;
+            border: none;
+        }
+
+        .mini-calendar-day.available {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .mini-calendar-day.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .mini-calendar-day.disabled {
+            background: var(--gray-100);
+            color: var(--gray-400);
+            border-color: var(--gray-200);
+            opacity: 0.7;
+        }
+
+        .mini-calendar-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--primary);
+            position: absolute;
+            bottom: 4px;
+        }
+
+        .mini-calendar-day.selected .mini-calendar-dot {
+            display: none;
+        }
+
+        .mini-calendar-legend {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            margin-top: 0.75rem;
+        }
+
+        .mini-calendar-legend span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: inline-block;
+        }
+
+        .timeslots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .timeslots-empty {
+            grid-column: 1 / -1;
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--gray-500);
+            background: var(--gray-50);
+            border: 1px dashed var(--gray-300);
+            border-radius: 12px;
+        }
+
+        .timeslots-content.animate-change {
+            animation: timeslotsPulse 0.35s ease;
+        }
+
+        @keyframes timeslotsPulse {
+            0% {
+                opacity: 0.85;
+                transform: translateY(4px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeslot-btn {
+            padding: 1rem;
+            background: var(--white);
+            border: 2px solid var(--gray-300);
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .timeslot-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg-light);
+            color: var(--primary);
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+        }
+
+        .timeslot-btn.selected {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            border-color: var(--primary);
+            color: var(--white);
+            box-shadow: 0 4px 20px rgba(74, 144, 226, 0.4);
+        }
+
+        .timeslot-warning {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border-left: 4px solid var(--warning);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .timeslot-warning-icon {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeslot-warning-icon i {
+            font-size: 1.5rem;
+        }
+
+        .timeslot-warning-text {
+            font-size: 0.9375rem;
+            color: var(--gray-800);
+            font-weight: 500;
+        }
+
+        .btn-continue {
+            width: auto;
+            max-width: 350px;
+            padding: 1.125rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 1rem auto 0;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-continue i {
+            font-size: 1.1rem;
+        }
+
+        .btn-continue:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-continue:disabled {
+            background: var(--gray-300);
+            color: var(--gray-500);
+            cursor: not-allowed;
+        }
+
+        /* Step 4: Form */
+        .form-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 4px 25px rgba(74, 144, 226, 0.12);
+            border: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .form-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            font-size: 1rem;
+            color: var(--gray-600);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label span.required {
+            color: var(--error);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--gray-900);
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
+        }
+
+        .form-group input.error,
+        .form-group select.error {
+            border-color: var(--error);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .document-type-group {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 1rem;
+        }
+
+        .phone-input-group {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 1rem;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.875rem;
+            margin-top: 0.375rem;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .terms-checkbox {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--gray-50);
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 0.25rem;
+            cursor: pointer;
+        }
+
+        .terms-checkbox label {
+            font-size: 0.9375rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            line-height: 1.6;
+        }
+
+        .terms-checkbox a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+
+        /* Step 5: Confirmation */
+        .confirmation-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 4px 25px rgba(74, 144, 226, 0.12);
+            text-align: center;
+            border: 1px solid rgba(74, 144, 226, 0.1);
+        }
+
+        .confirmation-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .confirmation-icon i {
+            font-size: 3rem;
+            color: var(--white);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .confirmation-container h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .confirmation-subtitle {
+            font-size: 1.125rem;
+            color: var(--gray-600);
+            margin-bottom: 3rem;
+        }
+
+        .appointment-summary {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.9375rem;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            color: var(--gray-900);
+            font-size: 1.125rem;
+        }
+
+        .whatsapp-notice {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%);
+            border-left: 4px solid var(--success);
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .whatsapp-notice-icon {
+            font-size: 1.5rem;
+        }
+
+        .whatsapp-notice-text {
+            font-size: 0.9375rem;
+            color: var(--gray-800);
+            font-weight: 500;
+            text-align: left;
+        }
+
+        .whatsapp-notice-text strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--gray-900);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .calendar-container {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--gray-200);
+            }
+
+            .professionals-container-full {
+                grid-template-columns: 1fr;
+            }
+
+            .professionals-sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(74, 144, 226, 0.1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .progress-timeline {
+                padding: 0 1rem;
+            }
+
+            .progress-timeline::before {
+                top: 25%;
+            }
+
+            .progress-step-label {
+                font-size: 0.75rem;
+                max-width: 100px;
+            }
+
+            .progress-step-circle {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .professional-card {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .professional-actions {
+                min-width: 100%;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .document-type-group,
+            .phone-input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .timeslots-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .timeslots-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container,
+            .confirmation-container,
+            .timeslots-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .calendar-day {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .btn-search,
+            .btn-back,
+            .btn-continue {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .timer-container {
+                padding: 1rem 1rem;
+            }
+
+            .timer-content {
+                gap: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .timer-display {
+                min-width: 60px;
+                font-size: 1.1rem;
+            }
+
+            .progress-container {
+                padding: 1rem 0;
+            }
+
+            .progress-timeline {
+                padding: 0 0.5rem;
+                gap: 0.5rem;
+            }
+
+            .progress-timeline::before {
+                top: 25%;
+            }
+
+            .progress-step {
+                flex: 1;
+            }
+
+            .progress-step-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+
+            .progress-step-label {
+                font-size: 0.65rem;
+                max-width: 80px;
+                margin-top: 0.3rem;
+            }
+
+            .calendar-container {
+                display: block;
+            }
+
+            .calendar-sidebar {
+                padding: 1.5rem 1rem;
+                margin-bottom: 1.5rem;
+                border-bottom: 1px solid var(--gray-200);
+                border-right: none;
+            }
+
+            .specialty-select {
+                margin-bottom: 1rem;
+            }
+
+            .specialty-select label {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .select-wrapper select {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            .btn-search {
+                width: 100%;
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .calendar-main {
+                padding: 1rem;
+            }
+
+            .calendar-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .calendar-header .year {
+                font-size: 0.9rem;
+            }
+
+            .calendar-nav button {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .calendar-day {
+                padding: 0.6rem 0.4rem;
+                font-size: 0.8rem;
+            }
+
+            .calendar-day-header {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .professionals-container-full {
+                display: block;
+            }
+
+            .professionals-sidebar {
+                border-right: none;
+                border-bottom: 1px solid rgba(74, 144, 226, 0.1);
+                padding-bottom: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .professionals-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .professionals-header p {
+                font-size: 0.85rem;
+            }
+
+            .professional-card {
+                padding: 1rem;
+                grid-template-columns: 1fr;
+            }
+
+            .professional-photo {
+                width: 80px;
+                height: 80px;
+            }
+
+            .professional-name {
+                font-size: 1rem;
+            }
+
+            .professional-specialty {
+                font-size: 0.8rem;
+            }
+
+            .agreement-badge {
+                font-size: 0.7rem;
+            }
+
+            .next-available {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-reserve-quick,
+            .btn-view-more {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+                width: 100%;
+            }
+
+            .timeslots-container {
+                display: block;
+                padding: 1.5rem 1rem;
+            }
+
+            .timeslots-sidebar {
+                margin-bottom: 1.5rem;
+                padding-bottom: 1.5rem;
+                border-right: none;
+                border-bottom: 1px solid rgba(74, 144, 226, 0.1);
+            }
+
+            .timeslots-professional-card {
+                margin-bottom: 1rem;
+            }
+
+            .timeslots-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .timeslots-header .selected-date {
+                font-size: 0.85rem;
+            }
+
+            .mini-calendar-header {
+                padding: 0.75rem;
+            }
+
+            .mini-calendar-month,
+            .mini-calendar-year {
+                font-size: 0.85rem;
+            }
+
+            .mini-calendar-weekdays {
+                padding: 0.4rem;
+            }
+
+            .mini-calendar-day {
+                padding: 0.3rem;
+                font-size: 0.75rem;
+            }
+
+            .timeslots-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 0.6rem;
+            }
+
+            .timeslot-btn {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+            }
+
+            .btn-continue {
+                width: 100%;
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .form-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .form-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .form-header p {
+                font-size: 0.85rem;
+            }
+
+            .form-group label {
+                font-size: 0.85rem;
+                margin-bottom: 0.4rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .terms-checkbox {
+                font-size: 0.8rem;
+            }
+
+            .confirmation-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .confirmation-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+
+            .confirmation-container h2 {
+                font-size: 1.3rem;
+            }
+
+            .confirmation-subtitle {
+                font-size: 0.85rem;
+            }
+
+            .appointment-summary {
+                padding: 1rem;
+            }
+
+            .summary-row {
+                padding: 0.6rem 0;
+            }
+
+            .summary-label,
+            .summary-value {
+                font-size: 0.85rem;
+            }
+
+            .whatsapp-notice {
+                padding: 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem 1rem;
+                width: 90%;
+            }
+
+            .modal h2 {
+                font-size: 1.2rem;
+            }
+
+            .modal p {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .main-container {
+                padding: 1rem 0.75rem;
+            }
+
+            .timer-container {
+                padding: 0.75rem 0.75rem;
+            }
+
+            .timer-content {
+                gap: 0.3rem;
+                font-size: 0.75rem;
+            }
+
+            .timer-display {
+                min-width: 50px;
+                font-size: 0.95rem;
+            }
+
+            .progress-container {
+                padding: 0.75rem 0;
+            }
+
+            .progress-timeline {
+                padding: 0 0.25rem;
+                gap: 0.25rem;
+            }
+
+            .progress-timeline::before {
+                top: 25%;
+            }
+
+            .progress-step-circle {
+                width: 28px;
+                height: 28px;
+                font-size: 0.7rem;
+            }
+
+            .progress-step-label {
+                font-size: 0.55rem;
+                max-width: 65px;
+            }
+
+            .calendar-sidebar {
+                padding: 1rem 0.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .specialty-select label {
+                font-size: 0.8rem;
+            }
+
+            .select-wrapper select {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .btn-search {
+                padding: 0.7rem 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .calendar-main {
+                padding: 0.75rem;
+            }
+
+            .calendar-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .calendar-nav button {
+                padding: 0.4rem 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .calendar-day {
+                padding: 0.4rem 0.25rem;
+                font-size: 0.7rem;
+            }
+
+            .calendar-day-header {
+                padding: 0.3rem;
+                font-size: 0.65rem;
+            }
+
+            .professionals-sidebar {
+                padding-bottom: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .professionals-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .professionals-header p {
+                font-size: 0.8rem;
+            }
+
+            .professional-card {
+                padding: 0.75rem;
+            }
+
+            .professional-photo {
+                width: 70px;
+                height: 70px;
+            }
+
+            .professional-name {
+                font-size: 0.9rem;
+            }
+
+            .professional-specialty {
+                font-size: 0.75rem;
+            }
+
+            .agreement-badge {
+                font-size: 0.65rem;
+            }
+
+            .btn-reserve-quick,
+            .btn-view-more {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            .timeslots-sidebar {
+                margin-bottom: 1rem;
+                padding-bottom: 1rem;
+            }
+
+            .timeslots-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .timeslots-header .selected-date {
+                font-size: 0.8rem;
+            }
+
+            .mini-calendar-month,
+            .mini-calendar-year {
+                font-size: 0.8rem;
+            }
+
+            .mini-calendar-day {
+                padding: 0.2rem;
+                font-size: 0.7rem;
+            }
+
+            .timeslots-grid {
+                grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+                gap: 0.5rem;
+            }
+
+            .timeslot-btn {
+                padding: 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .btn-continue {
+                padding: 0.7rem 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .form-container {
+                padding: 1.25rem 0.75rem;
+            }
+
+            .form-header h2 {
+                font-size: 1.1rem;
+            }
+
+            .form-header p {
+                font-size: 0.8rem;
+            }
+
+            .form-group label {
+                font-size: 0.8rem;
+                margin-bottom: 0.3rem;
+            }
+
+            .form-group input,
+            .form-group select {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+
+            .terms-checkbox {
+                font-size: 0.75rem;
+            }
+
+            .confirmation-container {
+                padding: 1.25rem 0.75rem;
+            }
+
+            .confirmation-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.75rem;
+            }
+
+            .confirmation-container h2 {
+                font-size: 1.1rem;
+            }
+
+            .confirmation-subtitle {
+                font-size: 0.8rem;
+            }
+
+            .appointment-summary {
+                padding: 0.75rem;
+            }
+
+            .summary-label,
+            .summary-value {
+                font-size: 0.8rem;
+            }
+
+            .whatsapp-notice {
+                padding: 0.6rem;
+                font-size: 0.75rem;
+            }
+
+            .modal-content {
+                padding: 1.25rem 0.75rem;
+                width: 95%;
+            }
+
+            .modal h2 {
+                font-size: 1.05rem;
+            }
+
+            .modal p {
+                font-size: 0.8rem;
+            }
+
+            .modal .btn-primary {
+                padding: 0.7rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Modal for Terms */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 20px;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 3rem;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(74, 144, 226, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            border-radius: 8px;
+        }
+
+        .modal-close i {
+            font-size: 1.5rem;
+        }
+
+        .modal-close:hover {
+            color: var(--gray-900);
+            background: var(--gray-100);
+        }
+
+        .modal h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal p {
+            color: var(--gray-700);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .modal .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 2rem;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .modal .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(74, 144, 226, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Timer -->
+    <div class="timer-container" id="timerContainer">
+        <div class="timer-content">
+            <i class="fas fa-clock"></i>
+            <span class="timer-label">Tiempo disponible:</span>
+            <div class="timer-display" id="timerDisplay">15:00</div>
+        </div>
+    </div>
+
+    <!-- Progress Timeline -->
+    <div class="progress-container">
+        <div class="progress-timeline">
+            <div class="progress-step active" data-step="1">
+                <div class="progress-step-circle">1</div>
+                <div class="progress-step-label">Calendario</div>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="progress-step-circle">2</div>
+                <div class="progress-step-label">Profesionales</div>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="progress-step-circle">3</div>
+                <div class="progress-step-label">Fecha y Hora</div>
+            </div>
+            <div class="progress-step" data-step="4">
+                <div class="progress-step-circle">4</div>
+                <div class="progress-step-label">Formulario</div>
+            </div>
+            <div class="progress-step" data-step="5">
+                <div class="progress-step-circle">5</div>
+                <div class="progress-step-label">Confirmación</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Step 1: Calendar -->
+        <div class="step-content active" id="step1">
+            <div class="calendar-container">
+                <div class="calendar-sidebar">
+                    <div class="specialty-select">
+                        <label>Especialidad:</label>
+                        <div class="select-wrapper">
+                            <select id="specialtySelect" onchange="enableSearchButton()">
+                                <option value="cardiologia">Cardiología adulto</option>
+                                <option value="pediatria">Pediatría</option>
+                                <option value="dermatologia">Dermatología</option>
+                                <option value="traumatologia">Traumatología</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="oftalmologia">Oftalmología</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-search" id="searchBtn" onclick="searchAvailability()" disabled><i class="fas fa-search"></i> Buscar</button>
+                    <button class="btn-back" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Volver</button>
+                </div>
+                <div class="calendar-main">
+                    <div class="calendar-header">
+                        <div>
+                            <h2 id="monthName">Febrero</h2>
+                            <span class="year" id="yearDisplay">2026</span>
+                        </div>
+                        <div class="calendar-nav">
+                            <button id="prevMonthBtn" onclick="changeMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+                            <button onclick="changeMonth(1)"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">Lun</div>
+                        <div class="calendar-day-header">Mar</div>
+                        <div class="calendar-day-header">Mie</div>
+                        <div class="calendar-day-header">Jue</div>
+                        <div class="calendar-day-header">Vie</div>
+                        <div class="calendar-day-header">Sab</div>
+                        <div class="calendar-day-header">Dom</div>
+                    </div>
+                    <div class="calendar-grid" id="calendarDays"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Professionals -->
+        <div class="step-content" id="step2">
+            <div class="professionals-container-full">
+                <div class="professionals-sidebar">
+                    <div class="specialty-select">
+                        <label>Especialidad:</label>
+                        <div class="select-wrapper">
+                            <select id="specialtySelectStep2" onchange="enableFilterButton()">
+                                <option value="todas">Todas las especialidades</option>
+                                <option value="cardiologia">Cardiología adulto</option>
+                                <option value="pediatria">Pediatría</option>
+                                <option value="dermatologia">Dermatología</option>
+                                <option value="traumatologia">Traumatología</option>
+                                <option value="ginecologia">Ginecología</option>
+                                <option value="oftalmologia">Oftalmología</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-search" id="filterBtn" onclick="filterProfessionalsBySpecialty()" disabled><i class="fas fa-search"></i> Filtrar</button>
+                    <button class="btn-back" onclick="goToStep(1)"><i class="fas fa-arrow-left"></i> Volver</button>
+                </div>
+                <div class="professionals-content">
+                    <div class="professionals-header">
+                        <h2>Profesionales Disponibles</h2>
+                        <p id="selectedDateDisplay">Para la fecha seleccionada</p>
+                    </div>
+                    <div class="professionals-list" id="professionalsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Time Slots -->
+        <div class="step-content" id="step3">
+            <div class="timeslots-container">
+                <div class="timeslots-layout">
+                    <aside class="timeslots-sidebar">
+                        <div class="professional-card timeslots-professional-card" id="selectedProfessionalCard"></div>
+                        <button class="btn-back" onclick="goToStep(2)"><i class="fas fa-arrow-left"></i> Volver</button>
+                    </aside>
+                    <div class="timeslots-content">
+                        <div class="timeslots-header">
+                            <div class="selected-date" id="selectedDayNumber">13</div>
+                            <h2 id="selectedMonthYear">Febrero 2026</h2>
+                            <div class="clinic-name">
+                                <i class="fas fa-map-marker-alt"></i> <span id="clinicLocation">Clínica Biobío</span>
+                            </div>
+                        </div>
+                        
+                        <div class="timeslot-warning">
+                            <div class="timeslot-warning-icon"><i class="fas fa-info-circle"></i></div>
+                            <div class="timeslot-warning-text">
+                                <strong>Selecciona una hora:</strong> Elige el horario que más te acomode para tu cita médica.
+                            </div>
+                        </div>
+
+                        <div class="timeslots-grid" id="timeslotsGrid"></div>
+
+                        <button class="btn-continue" id="continueToForm" disabled onclick="goToStep(4)">
+                            Continuar al Formulario <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <aside class="timeslots-calendar-sidebar">
+                        <div class="mini-calendar">
+                            <div class="mini-calendar-header">
+                                <button class="mini-calendar-nav" id="miniCalPrev" onclick="changeMiniCalendarMonth(-1)">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <div class="mini-calendar-month">
+                                    <div id="miniCalendarMonth">Feb</div>
+                                    <div class="mini-calendar-year" id="miniCalendarYear">2026</div>
+                                </div>
+                                <button class="mini-calendar-nav" id="miniCalNext" onclick="changeMiniCalendarMonth(1)">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="mini-calendar-weekdays">
+                                <div>L</div>
+                                <div>M</div>
+                                <div>M</div>
+                                <div>J</div>
+                                <div>V</div>
+                                <div>S</div>
+                                <div>D</div>
+                            </div>
+                            <div class="mini-calendar-grid" id="miniCalendarGrid"></div>
+                            <div class="mini-calendar-legend"><span></span> Disponible</div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Form -->
+        <div class="step-content" id="step4">
+            <div class="form-container">
+                <button type="button" class="btn-back-top" onclick="goToStep(3)">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </button>
+                
+                <div class="form-header">
+                    <h2>Completa tus Datos</h2>
+                    <p>Necesitamos tu información para confirmar la cita</p>
+                </div>
+
+                <form id="appointmentForm">
+                    <div class="form-group document-type-group">
+                        <div>
+                            <label>Tipo <span class="required">*</span></label>
+                            <select id="documentType" required>
+                                <option value="rut">RUT</option>
+                                <option value="pasaporte">Pasaporte</option>
+                                <option value="cedula_extranjera">Cédula Extranjera</option>
+                                <option value="cedula_temporal">Cédula Temporal</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Documento <span class="required">*</span></label>
+                            <input type="text" id="documentNumber" placeholder="12.345.678-9" required>
+                            <span class="error-message" id="documentError">Este campo es obligatorio</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nombres <span class="required">*</span></label>
+                        <input type="text" id="firstName" placeholder="Juan Pablo" required>
+                        <span class="error-message" id="firstNameError">Este campo es obligatorio</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Apellido Paterno <span class="required">*</span></label>
+                        <input type="text" id="lastName" placeholder="González" required>
+                        <span class="error-message" id="lastNameError">Este campo es obligatorio</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Apellido Materno <span class="required">*</span></label>
+                        <input type="text" id="motherLastName" placeholder="Martínez" required>
+                        <span class="error-message" id="motherLastNameError">Este campo es obligatorio</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Género <span class="required">*</span></label>
+                        <select id="gender" required>
+                            <option value="">Seleccione...</option>
+                            <option value="masculino">Masculino</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fecha de Nacimiento <span class="required">*</span></label>
+                            <input type="date" id="birthDate" required>
+                            <span class="error-message" id="birthDateError">Este campo es obligatorio</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Edad</label>
+                            <input type="number" id="age" placeholder="Automático" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" id="email" placeholder="correo@ejemplo.com" required>
+                        <span class="error-message" id="emailError">Ingrese un email válido</span>
+                    </div>
+
+                    <div class="form-group phone-input-group">
+                        <div>
+                            <label>Código</label>
+                            <input type="text" id="phoneCode" value="+56" readonly>
+                        </div>
+                        <div>
+                            <label>Teléfono <span class="required">*</span></label>
+                            <input type="tel" id="phone" placeholder="9 1234 5678" required>
+                            <span class="error-message" id="phoneError">Este campo es obligatorio</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Servicio <span class="required">*</span></label>
+                        <select id="service" required>
+                            <option value="">Seleccione un servicio...</option>
+                            <option value="consulta">Consulta General</option>
+                            <option value="control">Control</option>
+                            <option value="procedimiento">Procedimiento</option>
+                            <option value="examen">Examen</option>
+                        </select>
+                    </div>
+
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="termsAccepted" required>
+                        <label for="termsAccepted">
+                            Acepto los <a href="#" onclick="showTermsModal(); return false;">Términos y Condiciones del Agendamiento Web</a>. 
+                            He leído y comprendo la política de privacidad y el tratamiento de mis datos personales.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-continue" style="margin-top: 1rem;">
+                        Confirmar Reserva <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Step 5: Confirmation -->
+        <div class="step-content" id="step5">
+            <div class="confirmation-container">
+                <div class="confirmation-icon"><i class="fas fa-check"></i></div>
+                <h2>¡Cita Agendada Exitosamente!</h2>
+                <p class="confirmation-subtitle">Tu cita ha sido confirmada con el profesional</p>
+
+                <div class="appointment-summary" id="appointmentSummary">
+                    <div class="summary-row">
+                        <span class="summary-label">Profesional:</span>
+                        <span class="summary-value" id="summaryProfessional">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Especialidad:</span>
+                        <span class="summary-value" id="summarySpecialty">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Fecha:</span>
+                        <span class="summary-value" id="summaryDate">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Hora:</span>
+                        <span class="summary-value" id="summaryTime">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Ubicación:</span>
+                        <span class="summary-value" id="summaryLocation">-</span>
+                    </div>
+                </div>
+
+                <div class="whatsapp-notice">
+                    <div class="whatsapp-notice-icon"><i class="fab fa-whatsapp"></i></div>
+                    <div class="whatsapp-notice-text">
+                        <strong>¿Necesitas anular tu hora?</strong>
+                        En caso de necesitar cancelar o reagendar, escribe por WhatsApp a nuestro asistente al +56 9 9081 9179
+                    </div>
+                </div>
+
+                <button class="btn-continue" onclick="window.location.reload()">
+                    <i class="fas fa-plus-circle"></i> Agendar Nueva Cita
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal" id="termsModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeTermsModal()"><i class="fas fa-times"></i></button>
+            <h2>Términos y Condiciones del Agendamiento Web</h2>
+            
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.25rem; font-weight: 700;">Política de Privacidad</h3>
+            <p>
+                Sanatorio Alemán protegerá su información personal, tanto en formato digital como físico, con altos estándares de seguridad. 
+                Los datos que usted entregue serán usados para gestionar su atención y podremos contactarlo por distintos medios (WhatsApp, 
+                correo o llamada telefónica) para fines médicos, administrativos o informativos.
+            </p>
+            
+            <p>
+                Si detecta un error o tiene alguna observación respecto a sus <strong>datos personales</strong>, puede escribir a 
+                <strong>dpd@sanatoriocleman.cl</strong> (Delegado Tratamiento de los datos Personales). Este correo es exclusivo para 
+                consultas o correcciones relacionadas con el tratamiento de su información personal.
+            </p>
+            
+            <p style="margin-top: 1.5rem;">
+                Al continuar con su agendamiento, acepta esta política.
+            </p>
+
+            <button class="btn-primary" onclick="acceptTermsAndClose()">Aceptar y Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentStep = 1;
+        let selectedDate = null;
+        let selectedProfessional = null;
+        let selectedTime = null;
+        let currentMonth = 1; // February (0-indexed)
+        let currentYear = 2026;
+        let miniCalendarMonth = 1;
+        let miniCalendarYear = 2026;
+        let selectedSpecialty = 'cardiologia';
+
+        // Available dates by specialty (demo purposes)
+        const specialtyAvailableDates = {
+            'cardiologia': [7, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27],
+            'pediatria': [6, 10, 13, 17, 19, 20, 24, 26, 27],
+            'dermatologia': [5, 7, 11, 12, 14, 18, 19, 21, 25, 26, 28],
+            'traumatologia': [9, 11, 13, 16, 18, 20, 23, 24, 25, 27],
+            'ginecologia': [6, 10, 12, 14, 17, 19, 21, 24, 26, 28],
+            'oftalmologia': [7, 9, 12, 14, 16, 18, 20, 23, 25, 27]
+        };
+
+        // Timer state
+        let timerInterval = null;
+        let timeRemaining = 15 * 60; // 15 minutes in seconds
+
+        // Initialize timer
+        function initializeTimer() {
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerContainer = document.getElementById('timerContainer');
+
+            function updateTimer() {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                const timeString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                timerDisplay.textContent = timeString;
+
+                // Add warning class when less than 1 minute remains
+                if (timeRemaining <= 60 && timeRemaining > 0) {
+                    timerContainer.classList.add('warning');
+                } else if (timeRemaining > 60) {
+                    timerContainer.classList.remove('warning');
+                }
+
+                // Time expired
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerContainer.classList.add('expired');
+                    timerDisplay.textContent = '00:00';
+                    showTimeExpiredModal();
+                    return;
+                }
+
+                timeRemaining--;
+            }
+
+            // Update immediately
+            updateTimer();
+
+            // Update every second
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function showTimeExpiredModal() {
+            alert('Tu tiempo se ha agotado. Por favor, intenta de nuevo.');
+            // Reset the form and timer
+            location.reload();
+        }
+
+        // Mock data for professionals
+        const professionals = [
+            {
+                id: 1,
+                name: 'Gonzalez Marquez Alicex',
+                specialty: 'Cardiología adulto',
+                agreements: ['ISAPRE', 'PARTICULAR', 'DIPRECA'],
+                photo: null,
+                nextAvailable: { date: 'mié 11 feb', time: '15:00' },
+                clinic: 'Clínica Biobío'
+            },
+            {
+                id: 2,
+                name: 'Dr. Ricardo Pérez Silva',
+                specialty: 'Cardiología adulto',
+                agreements: ['ISAPRE', 'FONASA'],
+                photo: null,
+                nextAvailable: { date: 'jue 12 feb', time: '10:30' },
+                clinic: 'Clínica Biobío'
+            },
+            {
+                id: 3,
+                name: 'Dra. María Fernández López',
+                specialty: 'Cardiología adulto',
+                agreements: ['PARTICULAR', 'DIPRECA'],
+                photo: null,
+                nextAvailable: { date: 'vie 13 feb', time: '14:00' },
+                clinic: 'Clínica Biobío'
+            }
+        ];
+
+        // Time slots for demonstration
+        const timeSlots = [
+            '14:30', '14:45', '15:00', '15:15', '15:30', '15:45',
+            '16:00', '16:15', '16:30', '16:45', '17:00', '17:15', '17:45'
+        ];
+
+        function getDemoTimeSlots(date) {
+            const day = date.getDay();
+            if (day === 0) {
+                return [];
+            }
+            if (day === 6) {
+                return ['09:00', '09:30', '10:00', '10:30', '11:00'];
+            }
+            if (day === 5) {
+                return ['13:30', '14:00', '14:30', '15:00', '15:30'];
+            }
+            if (day === 1 || day === 3) {
+                return ['10:00', '10:30', '11:00', '11:30', '12:00'];
+            }
+            return timeSlots;
+        }
+
+        // Initialize calendar
+        function renderCalendar() {
+            const daysContainer = document.getElementById('calendarDays');
+            daysContainer.innerHTML = '';
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const today = new Date();
+            
+            // Adjust for Monday start (getDay() returns 0 for Sunday, we want Monday to be 0)
+            const offset = firstDay === 0 ? 6 : firstDay - 1;
+            
+            // Empty cells for days before month starts
+            for (let i = 0; i < offset; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                emptyDay.style.cursor = 'default';
+                emptyDay.style.background = 'transparent';
+                daysContainer.appendChild(emptyDay);
+            }
+            
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                const currentDate = new Date(currentYear, currentMonth, day);
+                const isToday = currentDate.toDateString() === today.toDateString();
+                const isPast = currentDate < today && !isToday;
+                
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+                
+                if (isToday) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Make future dates (and specific available dates) clickable
+                const availableDates = specialtyAvailableDates[selectedSpecialty] || [];
+                if (!isPast && availableDates.includes(day)) {
+                    dayElement.classList.add('available');
+                    dayElement.onclick = () => selectDate(day);
+                } else if (isPast) {
+                    dayElement.style.opacity = '0.5';
+                }
+                
+                daysContainer.appendChild(dayElement);
+            }
+            
+            // Update month/year display
+            const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('monthName').textContent = months[currentMonth];
+            document.getElementById('yearDisplay').textContent = currentYear;
+            
+            // Hide previous month button if current month is today's month
+            const prevBtn = document.getElementById('prevMonthBtn');
+            const todayMonth = new Date().getMonth();
+            const todayYear = new Date().getFullYear();
+            
+            if (currentMonth === todayMonth && currentYear === todayYear) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'flex';
+            }
+        }
+
+        function changeMonth(direction) {
+            currentMonth += direction;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            } else if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            renderCalendar();
+        }
+
+        function selectDate(day) {
+            selectedDate = new Date(currentYear, currentMonth, day);
+            
+            // Update UI
+            document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            // Update specialty selector in step 2 to match step 1
+            document.getElementById('specialtySelectStep2').value = selectedSpecialty;
+            
+            // Go to professionals step
+            setTimeout(() => {
+                goToStep(2);
+                renderProfessionals();
+            }, 300);
+        }
+
+        function enableSearchButton() {
+            document.getElementById('searchBtn').disabled = false;
+        }
+
+        function enableFilterButton() {
+            document.getElementById('filterBtn').disabled = false;
+        }
+
+        function searchAvailability() {
+            selectedSpecialty = document.getElementById('specialtySelect').value;
+            renderCalendar();
+            document.getElementById('searchBtn').disabled = true;
+        }
+
+        function renderProfessionalsList(specialty = null) {
+            const container = document.getElementById('professionalsList');
+            container.innerHTML = '';
+            
+            const months = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 
+                          'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+            const days = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+            
+            const dateStr = `${days[selectedDate.getDay()]} ${selectedDate.getDate()} de ${months[selectedDate.getMonth()]} de ${selectedDate.getFullYear()}`;
+            document.getElementById('selectedDateDisplay').textContent = `Para ${dateStr}`;
+            
+            // Determine specialty to filter by
+            let specialtyToFilter = specialty;
+            if (!specialtyToFilter) {
+                const selectStep2 = document.getElementById('specialtySelectStep2');
+                specialtyToFilter = selectStep2 ? selectStep2.value : selectedSpecialty;
+            }
+            
+            // Filter professionals
+            let filteredProfessionals = professionals;
+            if (specialtyToFilter && specialtyToFilter !== 'todas') {
+                const specialtyMap = {
+                    'cardiologia': 'Cardiología adulto',
+                    'pediatria': 'Pediatría',
+                    'dermatologia': 'Dermatología',
+                    'traumatologia': 'Traumatología',
+                    'ginecologia': 'Ginecología',
+                    'oftalmologia': 'Oftalmología'
+                };
+                const specialtyLabel = specialtyMap[specialtyToFilter];
+                filteredProfessionals = professionals.filter(prof => prof.specialty === specialtyLabel);
+            }
+            
+            if (filteredProfessionals.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #999;"><i class="fas fa-inbox"></i> No hay profesionales disponibles para esta especialidad</div>';
+                return;
+            }
+            
+            filteredProfessionals.forEach(prof => {
+                const card = document.createElement('div');
+                card.className = 'professional-card';
+                card.innerHTML = `
+                    <div class="professional-photo">
+                        ${prof.photo ? `<img src="${prof.photo}" alt="${prof.name}">` : 
+                          `<div class="professional-photo-placeholder"><i class="fas fa-user-md"></i></div>`}
+                    </div>
+                    <div class="professional-info">
+                        <div class="professional-name">${prof.name}</div>
+                        <div class="professional-specialty">${prof.specialty}</div>
+                        <div class="professional-agreements">
+                            ${prof.agreements.map(a => `<span class="agreement-badge">${a}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="professional-actions">
+                        <div class="next-available">
+                            <div class="next-available-label">Próxima hora disponible</div>
+                            <div class="next-available-info">
+                                <i class="fas fa-calendar-alt"></i> <strong>${prof.nextAvailable.date}</strong>
+                            </div>
+                            <div class="next-available-info">
+                                <i class="fas fa-clock"></i> <strong>${prof.nextAvailable.time}</strong>
+                            </div>
+                            <button class="btn-reserve-quick" onclick="quickReserve(${prof.id}, '${prof.nextAvailable.date}', '${prof.nextAvailable.time}')">
+                                Reservar
+                            </button>
+                        </div>
+                        <button class="btn-view-more" onclick="viewMoreTimes(${prof.id})">
+                            Ver más horas
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterProfessionalsBySpecialty() {
+            renderProfessionalsList();
+        }
+
+        function renderProfessionals() {
+            renderProfessionalsList(selectedSpecialty);
+        }
+
+        function quickReserve(profId, dateStr, time) {
+            selectedProfessional = professionals.find(p => p.id === profId);
+            selectedTime = time;
+            
+            // Parse the date string (e.g., 'mié 11 feb')
+            // Format: day_name day_number month_name
+            const parts = dateStr.split(' ');
+            const dayNumber = parseInt(parts[1]);
+            const monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+            const monthIndex = monthNames.indexOf(parts[2].toLowerCase());
+            
+            selectedDate = new Date(2026, monthIndex, dayNumber);
+            
+            goToStep(4);
+        }
+
+        function viewMoreTimes(profId) {
+            selectedProfessional = professionals.find(p => p.id === profId);
+            goToStep(3);
+            renderTimeSlots();
+        }
+
+        function renderTimeSlots() {
+            const timeslotsContent = document.querySelector('.timeslots-content');
+            if (timeslotsContent) {
+                timeslotsContent.classList.remove('animate-change');
+                void timeslotsContent.offsetWidth;
+                timeslotsContent.classList.add('animate-change');
+            }
+
+            const container = document.getElementById('timeslotsGrid');
+            container.innerHTML = '';
+
+            const professionalCard = document.getElementById('selectedProfessionalCard');
+            if (professionalCard && selectedProfessional) {
+                professionalCard.innerHTML = `
+                    <div class="timeslots-professional-title">Profesional</div>
+                    <div class="professional-photo">
+                        ${selectedProfessional.photo ? `<img src="${selectedProfessional.photo}" alt="${selectedProfessional.name}">` :
+                          `<div class="professional-photo-placeholder"><i class="fas fa-user-md"></i></div>`}
+                    </div>
+                    <div class="professional-info">
+                        <div class="professional-name">${selectedProfessional.name}</div>
+                        <div class="professional-specialty">${selectedProfessional.specialty}</div>
+                        <div class="professional-agreements">
+                            ${selectedProfessional.agreements.map(a => `<span class="agreement-badge">${a}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('selectedDayNumber').textContent = selectedDate.getDate();
+            
+            const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('selectedMonthYear').textContent = 
+                `${months[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+            
+            document.getElementById('clinicLocation').textContent = selectedProfessional.clinic;
+
+            // Don't reset selectedTime if we already have one (from quickReserve)
+            const previouslySelectedTime = selectedTime;
+            const continueButton = document.getElementById('continueToForm');
+
+            renderMiniCalendar();
+            
+            const dailySlots = getDemoTimeSlots(selectedDate);
+            const isSelectedTimeAvailable = !!previouslySelectedTime && dailySlots.includes(previouslySelectedTime);
+            if (continueButton) {
+                continueButton.disabled = !isSelectedTimeAvailable;
+            }
+            if (!isSelectedTimeAvailable) {
+                selectedTime = null;
+            }
+
+            if (dailySlots.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'timeslots-empty';
+                empty.textContent = 'No hay horarios disponibles para esta fecha.';
+                container.appendChild(empty);
+                return;
+            }
+
+            dailySlots.forEach(time => {
+                const btn = document.createElement('button');
+                btn.className = 'timeslot-btn';
+                // Mark as selected if this was the previously selected time
+                if (isSelectedTimeAvailable && previouslySelectedTime === time) {
+                    btn.classList.add('selected');
+                }
+                btn.innerHTML = `<i class="far fa-clock"></i> ${time}`;
+                btn.onclick = () => selectTimeSlot(time, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function renderMiniCalendar() {
+            const miniCalendarGrid = document.getElementById('miniCalendarGrid');
+            const miniCalendarMonthEl = document.getElementById('miniCalendarMonth');
+            const miniCalendarYearEl = document.getElementById('miniCalendarYear');
+            if (miniCalendarGrid && miniCalendarMonthEl && miniCalendarYearEl) {
+                const shortMonths = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                const year = miniCalendarYear;
+                const month = miniCalendarMonth;
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const offset = firstDay === 0 ? 6 : firstDay - 1;
+                const today = new Date();
+                const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+                miniCalendarMonthEl.textContent = shortMonths[month];
+                miniCalendarYearEl.textContent = year;
+
+                const prevBtn = document.getElementById('miniCalPrev');
+                const nextBtn = document.getElementById('miniCalNext');
+                if (prevBtn) {
+                    const todayMonth = today.getMonth();
+                    const todayYear = today.getFullYear();
+                    const isPreviousDisabled = (year < todayYear) || (year === todayYear && month <= todayMonth);
+                    prevBtn.disabled = isPreviousDisabled;
+                }
+                miniCalendarGrid.innerHTML = '';
+
+                for (let i = 0; i < offset; i++) {
+                    const empty = document.createElement('div');
+                    empty.className = 'mini-calendar-day empty';
+                    miniCalendarGrid.appendChild(empty);
+                }
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dayOfWeek = date.getDay();
+                    const isAvailable = dayOfWeek >= 1 && dayOfWeek <= 6;
+                    const isPast = date < todayStart;
+                    const cell = document.createElement('div');
+                    cell.className = `mini-calendar-day${isAvailable ? ' available' : ''}${isPast ? ' disabled' : ''}`;
+                    const isSelected = selectedDate && day === selectedDate.getDate() && month === selectedDate.getMonth() && year === selectedDate.getFullYear();
+                    if (isSelected) {
+                        cell.classList.add('selected');
+                    }
+                    cell.textContent = day;
+                    if (isAvailable && !isPast) {
+                        cell.classList.add('selectable');
+                        cell.onclick = () => {
+                            selectedDate = new Date(year, month, day);
+                            renderTimeSlots();
+                        };
+                    }
+                    if (isAvailable && !isPast && !isSelected) {
+                        const dot = document.createElement('span');
+                        dot.className = 'mini-calendar-dot';
+                        cell.appendChild(dot);
+                    }
+                    miniCalendarGrid.appendChild(cell);
+                }
+            }
+        }
+
+        function changeMiniCalendarMonth(direction) {
+            miniCalendarMonth += direction;
+            if (miniCalendarMonth > 11) {
+                miniCalendarMonth = 0;
+                miniCalendarYear++;
+            } else if (miniCalendarMonth < 0) {
+                miniCalendarMonth = 11;
+                miniCalendarYear--;
+            }
+            renderMiniCalendar();
+        }
+
+        function selectTimeSlot(time, element) {
+            selectedTime = time;
+            document.querySelectorAll('.timeslot-btn').forEach(b => b.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('continueToForm').disabled = false;
+        }
+
+        function goToStep(step) {
+            // Update progress
+            document.querySelectorAll('.progress-step').forEach((s, idx) => {
+                s.classList.remove('active', 'completed');
+                if (idx + 1 < step) {
+                    s.classList.add('completed');
+                } else if (idx + 1 === step) {
+                    s.classList.add('active');
+                }
+            });
+            
+            // Show content
+            document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            // If going to step 3, ensure we have the necessary data and render
+            if (step === 3 && selectedProfessional) {
+                if (!selectedDate) {
+                    selectedDate = new Date();
+                }
+                miniCalendarMonth = selectedDate.getMonth();
+                miniCalendarYear = selectedDate.getFullYear();
+                renderTimeSlots();
+            }
+            
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Form handling
+        document.getElementById('birthDate').addEventListener('change', function() {
+            const birthDate = new Date(this.value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            document.getElementById('age').value = age;
+        });
+
+        document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Basic validation
+            let isValid = true;
+            const requiredFields = ['documentNumber', 'firstName', 'lastName', 'motherLastName', 
+                                   'birthDate', 'email', 'phone'];
+            
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                const error = document.getElementById(field + 'Error');
+                
+                if (!input.value.trim()) {
+                    input.classList.add('error');
+                    if (error) error.classList.add('visible');
+                    isValid = false;
+                } else {
+                    input.classList.remove('error');
+                    if (error) error.classList.remove('visible');
+                }
+            });
+            
+            // Email validation
+            const email = document.getElementById('email');
+            const emailError = document.getElementById('emailError');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!emailRegex.test(email.value)) {
+                email.classList.add('error');
+                emailError.classList.add('visible');
+                isValid = false;
+            }
+            
+            // Terms acceptance
+            if (!document.getElementById('termsAccepted').checked) {
+                alert('Debes aceptar los términos y condiciones');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Populate confirmation
+                const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                
+                document.getElementById('summaryProfessional').textContent = selectedProfessional.name;
+                document.getElementById('summarySpecialty').textContent = selectedProfessional.specialty;
+                document.getElementById('summaryDate').textContent = 
+                    `${days[selectedDate.getDay()]}, ${selectedDate.getDate()} de ${months[selectedDate.getMonth()]} de ${selectedDate.getFullYear()}`;
+                document.getElementById('summaryTime').textContent = selectedTime;
+                document.getElementById('summaryLocation').textContent = selectedProfessional.clinic;
+                
+                goToStep(5);
+            }
+        });
+
+        function showTermsModal() {
+            document.getElementById('termsModal').classList.add('active');
+        }
+
+        function closeTermsModal() {
+            document.getElementById('termsModal').classList.remove('active');
+        }
+
+        function acceptTermsAndClose() {
+            document.getElementById('termsAccepted').checked = true;
+            closeTermsModal();
+        }
+
+        // Initialize
+        renderCalendar();
+        initializeTimer();
+    </script>
+</body>
+</html>
